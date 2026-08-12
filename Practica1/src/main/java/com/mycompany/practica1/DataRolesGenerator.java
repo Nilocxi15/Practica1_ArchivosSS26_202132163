@@ -1,5 +1,7 @@
 package com.mycompany.practica1;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,9 +14,12 @@ class DataRolesGenerator {
         System.out.println("Iniciando generacion de archivo con datos de roles de inicio de sesion.");
 
         try {
+            // Comprobación y/o creación de carpeta si existe
+            this.createFolder();
+            
             // Comprobación de si existe el archivo
 
-            Path file = Path.of("roles.dat");
+            Path file = Path.of("data/roles.dat");
 
             if (Files.exists(file)) {
                 System.out.println("El archivo ya existe. No se generó ningun archivo extra.");
@@ -51,7 +56,7 @@ class DataRolesGenerator {
 
             final Random random = new Random();
             int password = 10;
-            RandomAccessFile raf = new RandomAccessFile("roles.dat", "rw");
+            RandomAccessFile raf = new RandomAccessFile("data/roles.dat", "rw");
 
             // Iteración con datos para llenar tuplas de archivo
             for (int i = 0; i < 11; i++) {
@@ -76,5 +81,14 @@ class DataRolesGenerator {
         } catch (Exception e) {
             System.out.println("ERROR. No fue posible generar el archivo binario");
         }
+    }
+
+    // Creación de carpeta para almacenar archivos binarios
+    private void createFolder() throws IOException {
+        File folder = new File("data");
+        if (!folder.exists()) {
+            folder.mkdir();
+        }
+
     }
 }
