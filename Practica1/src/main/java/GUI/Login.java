@@ -116,7 +116,7 @@ public class Login extends javax.swing.JFrame {
             // Arreglo de objetos
             Receptionist receptionist;
 
-            RandomAccessFile raf = new RandomAccessFile("roles.dat", "r");
+            RandomAccessFile raf = new RandomAccessFile("data/roles.dat", "r");
 
             for (int i = 0; i < 10; i++) {
                 byte[] idData = new byte[idSize];
