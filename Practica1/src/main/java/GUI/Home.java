@@ -1,16 +1,27 @@
 package GUI;
 
+import models.Receptionist;
+
 public class Home extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Home.class.getName());
+    
+    Receptionist receptionist;
 
     /**
      * Creates new form Home
-     */
+      */
     public Home() {
         initComponents();
         this.setLocationRelativeTo(null);
-        this.setTitle("Inicio");
+        this.setTitle("Inicio");        
+    }
+    
+    public Home(String id, String fullname) {
+        receptionist = new Receptionist(id, fullname, "");
+        initComponents();
+        this.setLocationRelativeTo(null);
+        this.setTitle("Inicio");        
     }
 
     /**

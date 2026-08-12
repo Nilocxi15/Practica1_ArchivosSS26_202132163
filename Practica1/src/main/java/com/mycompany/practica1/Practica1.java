@@ -1,12 +1,17 @@
 package com.mycompany.practica1;
 
 import GUI.Login;
+
 import com.formdev.flatlaf.FlatDarculaLaf;
 import javax.swing.SwingUtilities;
 
 public class Practica1 {
 
     public static void main(String[] args) {
+        // Generación de archivo con roles de recepcionista
+        DataRolesGenerator util = new DataRolesGenerator();
+        util.generateFile();
+        
         // Configuración de Look and Feel de FlatLaf
         FlatDarculaLaf.setup();
 

@@ -1,3 +1,9 @@
-/home/javier-ixcolin/Documentos/ArchivosSS26/Practica1/Practica1/src/main/java/GUI/Home.java
-/home/javier-ixcolin/Documentos/ArchivosSS26/Practica1/Practica1/src/main/java/GUI/Login.java
-/home/javier-ixcolin/Documentos/ArchivosSS26/Practica1/Practica1/src/main/java/com/mycompany/practica1/Practica1.java
+/home/javier-ixcolin/Documentos/ArchivosSS26/Practica1/Practica1_ArchivosSS26_202132163/Practica1/src/main/java/GUI/Home.java
+/home/javier-ixcolin/Documentos/ArchivosSS26/Practica1/Practica1_ArchivosSS26_202132163/Practica1/src/main/java/GUI/Login.java
+/home/javier-ixcolin/Documentos/ArchivosSS26/Practica1/Practica1_ArchivosSS26_202132163/Practica1/src/main/java/GUI/appointments/HomeAppointments.java
+/home/javier-ixcolin/Documentos/ArchivosSS26/Practica1/Practica1_ArchivosSS26_202132163/Practica1/src/main/java/GUI/doctors/HomeDoctors.java
+/home/javier-ixcolin/Documentos/ArchivosSS26/Practica1/Practica1_ArchivosSS26_202132163/Practica1/src/main/java/GUI/patients/HomePatients.java
+/home/javier-ixcolin/Documentos/ArchivosSS26/Practica1/Practica1_ArchivosSS26_202132163/Practica1/src/main/java/GUI/reports/HomeReports.java
+/home/javier-ixcolin/Documentos/ArchivosSS26/Practica1/Practica1_ArchivosSS26_202132163/Practica1/src/main/java/com/mycompany/practica1/DataRolesGenerator.java
+/home/javier-ixcolin/Documentos/ArchivosSS26/Practica1/Practica1_ArchivosSS26_202132163/Practica1/src/main/java/com/mycompany/practica1/Practica1.java
+/home/javier-ixcolin/Documentos/ArchivosSS26/Practica1/Practica1_ArchivosSS26_202132163/Practica1/src/main/java/models/Receptionist.java

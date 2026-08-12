@@ -1,5 +1,11 @@
-GUI/Home.class
-GUI/Home$1.class
+models/Receptionist.class
 GUI/Login.class
 com/mycompany/practica1/Practica1.class
+GUI/reports/HomeReports.class
+GUI/patients/HomePatients.class
+com/mycompany/practica1/DataRolesGenerator.class
+GUI/Home.class
+GUI/Home$1.class
 GUI/Home$2.class
+GUI/appointments/HomeAppointments.class
+GUI/doctors/HomeDoctors.class
