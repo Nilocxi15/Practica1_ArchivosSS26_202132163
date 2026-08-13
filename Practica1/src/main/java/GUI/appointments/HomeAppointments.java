@@ -1,13 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package GUI.appointments;
 
-/**
- *
- * @author javier-ixcolin
- */
 public class HomeAppointments extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(HomeAppointments.class.getName());
@@ -17,6 +9,13 @@ public class HomeAppointments extends javax.swing.JFrame {
      */
     public HomeAppointments() {
         initComponents();
+    }
+    
+    // Constructor parametrizado para inyección de dependencias
+    public HomeAppointments(String id, String fullname) {
+        initComponents();
+        this.setLocationRelativeTo(null);
+        this.setTitle("Citas");
     }
 
     /**
