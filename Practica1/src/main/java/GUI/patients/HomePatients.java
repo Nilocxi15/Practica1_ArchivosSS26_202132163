@@ -1,15 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package GUI.patients;
 
-/**
- *
- * @author javier-ixcolin
- */
 public class HomePatients extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(HomePatients.class.getName());
 
     /**
@@ -17,6 +9,13 @@ public class HomePatients extends javax.swing.JFrame {
      */
     public HomePatients() {
         initComponents();
+    }
+
+    // Constructor parametrizado para inyección de dependencias
+    public HomePatients(String id, String fullname) {
+        initComponents();
+        this.setLocationRelativeTo(null);
+        this.setTitle("Pacientes");
     }
 
     /**
