@@ -1,8 +1,18 @@
 package GUI.patients;
 
+import GUI.Home;
+import GUI.Login;
+import GUI.doctors.HomeDoctors;
+import GUI.reports.HomeReports;
+import java.io.IOException;
+import models.Receptionist;
+import util.Reports;
+
 public class HomePatients extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(HomePatients.class.getName());
+    
+    Receptionist receptionist;
 
     /**
      * Creates new form HomePatients
@@ -13,6 +23,7 @@ public class HomePatients extends javax.swing.JFrame {
 
     // Constructor parametrizado para inyección de dependencias
     public HomePatients(String id, String fullname) {
+        receptionist = new Receptionist(id, fullname, "");
         initComponents();
         this.setLocationRelativeTo(null);
         this.setTitle("Pacientes");
@@ -27,21 +38,214 @@ public class HomePatients extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel1 = new javax.swing.JLabel();
+        searchPatientField = new javax.swing.JTextField();
+        searchPatientBtn = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        dataTable = new javax.swing.JTable();
+        createPatientBtn = new javax.swing.JButton();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        filesMenu = new javax.swing.JMenu();
+        homeMenu = new javax.swing.JMenu();
+        doctorsMenu = new javax.swing.JMenu();
+        reportsMenu = new javax.swing.JMenu();
+        logoutMenu = new javax.swing.JMenu();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMaximumSize(new java.awt.Dimension(1280, 720));
+        setMinimumSize(new java.awt.Dimension(1280, 720));
+        setResizable(false);
+
+        jLabel1.setFont(new java.awt.Font("Ubuntu", 1, 24)); // NOI18N
+        jLabel1.setText("Listado de Pacientes");
+
+        searchPatientField.addActionListener(this::searchPatientFieldActionPerformed);
+
+        searchPatientBtn.setFont(new java.awt.Font("Ubuntu", 0, 15)); // NOI18N
+        searchPatientBtn.setText("Buscar");
+        searchPatientBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                searchPatientBtnMouseClicked(evt);
+            }
+        });
+
+        dataTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "ID", "Nombre", "Fecha Nacimiento", "Sexo", "Teléfono", "Email", "Tipo Sangre"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        dataTable.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(dataTable);
+        if (dataTable.getColumnModel().getColumnCount() > 0) {
+            dataTable.getColumnModel().getColumn(0).setResizable(false);
+            dataTable.getColumnModel().getColumn(1).setResizable(false);
+            dataTable.getColumnModel().getColumn(2).setResizable(false);
+            dataTable.getColumnModel().getColumn(3).setResizable(false);
+            dataTable.getColumnModel().getColumn(5).setResizable(false);
+            dataTable.getColumnModel().getColumn(6).setResizable(false);
+        }
+
+        createPatientBtn.setFont(new java.awt.Font("Ubuntu", 0, 15)); // NOI18N
+        createPatientBtn.setText("Agregar Paciente");
+        createPatientBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                createPatientBtnMouseClicked(evt);
+            }
+        });
+
+        filesMenu.setText("Archivos");
+        filesMenu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                filesMenuMouseClicked(evt);
+            }
+        });
+        jMenuBar1.add(filesMenu);
+
+        homeMenu.setText("Inicio");
+        homeMenu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                homeMenuMouseClicked(evt);
+            }
+        });
+        jMenuBar1.add(homeMenu);
+
+        doctorsMenu.setText("Médicos");
+        doctorsMenu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                doctorsMenuMouseClicked(evt);
+            }
+        });
+        jMenuBar1.add(doctorsMenu);
+
+        reportsMenu.setText("Reportes");
+        reportsMenu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                reportsMenuMouseClicked(evt);
+            }
+        });
+        jMenuBar1.add(reportsMenu);
+
+        logoutMenu.setText("Cerrar Sesión");
+        logoutMenu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                logoutMenuMouseClicked(evt);
+            }
+        });
+        jMenuBar1.add(logoutMenu);
+
+        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(50, 50, 50)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(searchPatientField, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(searchPatientBtn)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(createPatientBtn))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1180, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(50, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(8, 8, 8)
+                .addComponent(jLabel1)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(createPatientBtn, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(searchPatientField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(searchPatientBtn)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 555, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(50, 50, 50))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void filesMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_filesMenuMouseClicked
+        // Verificación y creación de carpeta de reportes en caso no exista
+        Reports reports = new Reports();
+        try {
+            reports.createFolder();
+
+            // Apertura de carpeta
+            reports.openFolder();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_filesMenuMouseClicked
+
+    private void homeMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeMenuMouseClicked
+        // Cerrar ventana de inicio
+        this.dispose();
+        
+        // Abrir ventana de página de inicio
+        Home home = new Home(receptionist.getId(), receptionist.getFullName());
+        home.setVisible(true);
+    }//GEN-LAST:event_homeMenuMouseClicked
+
+    private void doctorsMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_doctorsMenuMouseClicked
+        // Cerrar ventana de inicio
+        this.dispose();
+
+        // Abrir ventana de doctores
+        HomeDoctors homeDoctors = new HomeDoctors(receptionist.getId(), receptionist.getFullName());
+        homeDoctors.setVisible(true);
+    }//GEN-LAST:event_doctorsMenuMouseClicked
+
+    private void reportsMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_reportsMenuMouseClicked
+        // Cerrar ventana de inicio
+        this.dispose();
+        
+        // Abrir ventana de reportes
+        HomeReports homeReports = new HomeReports(receptionist.getId(), receptionist.getFullName());
+        homeReports.setVisible(true);
+    }//GEN-LAST:event_reportsMenuMouseClicked
+
+    private void logoutMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_logoutMenuMouseClicked
+        // Cerrar ventana de inicio
+        this.dispose();
+
+        // Abrir ventana de login
+        Login login = new Login();
+        login.setVisible(true);
+    }//GEN-LAST:event_logoutMenuMouseClicked
+
+    private void searchPatientFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchPatientFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_searchPatientFieldActionPerformed
+
+    private void searchPatientBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_searchPatientBtnMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_searchPatientBtnMouseClicked
+
+    private void createPatientBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createPatientBtnMouseClicked
+        // Abriri ventana para crear paciente
+        CreatePatient createPatient = new CreatePatient(receptionist.getId(), receptionist.getFullName());
+        createPatient.setVisible(true);
+    }//GEN-LAST:event_createPatientBtnMouseClicked
 
     /**
      * @param args the command line arguments
@@ -69,5 +273,17 @@ public class HomePatients extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton createPatientBtn;
+    private javax.swing.JTable dataTable;
+    private javax.swing.JMenu doctorsMenu;
+    private javax.swing.JMenu filesMenu;
+    private javax.swing.JMenu homeMenu;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JMenu logoutMenu;
+    private javax.swing.JMenu reportsMenu;
+    private javax.swing.JButton searchPatientBtn;
+    private javax.swing.JTextField searchPatientField;
     // End of variables declaration//GEN-END:variables
 }

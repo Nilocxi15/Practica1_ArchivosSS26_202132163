@@ -89,6 +89,5 @@ class DataRolesGenerator {
         if (!folder.exists()) {
             folder.mkdir();
         }
-
     }
 }
