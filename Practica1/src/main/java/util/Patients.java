@@ -1,6 +1,8 @@
 package util;
 
 import java.io.RandomAccessFile;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import models.Patient;
 
 public class Patients {
@@ -106,5 +108,81 @@ public class Patients {
         }
 
         return true;
+    }
+
+    public ArrayList<Patient> readAll() {
+        try {
+            // Declaración de tamaños específicos de cada campo
+            final int idSize = 13;
+            final int nameSize = 50;
+            final int lastnameSize = 50;
+            final int birthdateSize = 10;
+            final int genderSize = 1;
+            final int cellphoneSize = 14;
+            final int emailSize = 100;
+            final int bloodTypeSize = 3;
+
+            final int registerSize = idSize + nameSize + lastnameSize
+                    + birthdateSize + genderSize + cellphoneSize + emailSize
+                    + bloodTypeSize + 1;
+            /*
+             * Arreglo de objetos
+             */
+            Patient patient;
+            ArrayList<Patient> patients = new ArrayList<>();
+
+            RandomAccessFile raf = new RandomAccessFile("data/patients.dat", "r");
+
+            long totalRegisters = raf.length() / registerSize;
+
+            for (int i = 0; i < totalRegisters; i++) {
+                byte[] idData = new byte[idSize];
+                byte[] nameData = new byte[nameSize];
+                byte[] lastnameData = new byte[lastnameSize];
+                byte[] birthdateData = new byte[birthdateSize];
+                byte[] genderData = new byte[genderSize];
+                byte[] cellphoneData = new byte[cellphoneSize];
+                byte[] emailData = new byte[emailSize];
+                byte[] bloodTypeData = new byte[bloodTypeSize];
+
+                // Lectura de campos junto con movimiento de cursor
+                raf.readFully(idData);
+                raf.readFully(nameData);
+                raf.readFully(lastnameData);
+                raf.readFully(birthdateData);
+                raf.readFully(genderData);
+                raf.readFully(cellphoneData);
+                raf.readFully(emailData);
+                raf.readFully(bloodTypeData);
+                raf.readByte(); // Salto de línea
+
+                // Parseo de datos binarios a String
+                String id = new String(idData).trim();
+                String name = new String(nameData).trim();
+                String lastname = new String(lastnameData).trim();
+                String birthdateStr = new String(birthdateData).trim();
+                String gender = new String(genderData).trim();
+                String cellphone = new String(cellphoneData).trim();
+                String email = new String(emailData).trim();
+                String bloodType = new String(bloodTypeData).trim();
+                
+                // Verificación de espacios en blanco (se ignoran)
+                if (id.isBlank()) {
+                    continue;
+                }
+
+                // Parseo de String a LocalDate
+                LocalDate birthdate = LocalDate.parse(birthdateStr);
+                
+                // Llenado de ArrayList
+                patient = new Patient(id, name, lastname, birthdate, gender, cellphone, email, bloodType);
+                patients.add(patient);
+            }
+            
+            return patients;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

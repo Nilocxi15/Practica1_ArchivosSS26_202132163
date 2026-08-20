@@ -215,7 +215,9 @@ public class CreatePatient extends javax.swing.JFrame {
             return;
         }
         
-        // Al pasar todos los filtros, se procede a la creación de un objeto Patient y su registro en archivo persitente
+        /* 
+         * Al pasar todos los filtros, se procede a la creación de un objeto Patient y su registro en archivo persitente       
+        */
         
         // Parseo de variable de fecha
         LocalDate birthDateLD = birthdate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();        

@@ -5,13 +5,21 @@ import GUI.Login;
 import GUI.doctors.HomeDoctors;
 import GUI.reports.HomeReports;
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import models.Patient;
 import models.Receptionist;
+import util.Patients;
 import util.Reports;
 
 public class HomePatients extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(HomePatients.class.getName());
-    
+
     Receptionist receptionist;
 
     /**
@@ -27,6 +35,7 @@ public class HomePatients extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         this.setTitle("Pacientes");
+        this.loadTableData();
     }
 
     /**
@@ -44,6 +53,7 @@ public class HomePatients extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         dataTable = new javax.swing.JTable();
         createPatientBtn = new javax.swing.JButton();
+        jComboBox1 = new javax.swing.JComboBox<>();
         jMenuBar1 = new javax.swing.JMenuBar();
         filesMenu = new javax.swing.JMenu();
         homeMenu = new javax.swing.JMenu();
@@ -85,15 +95,24 @@ public class HomePatients extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        dataTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_LAST_COLUMN);
         dataTable.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(dataTable);
         if (dataTable.getColumnModel().getColumnCount() > 0) {
             dataTable.getColumnModel().getColumn(0).setResizable(false);
+            dataTable.getColumnModel().getColumn(0).setPreferredWidth(130);
             dataTable.getColumnModel().getColumn(1).setResizable(false);
+            dataTable.getColumnModel().getColumn(1).setPreferredWidth(220);
             dataTable.getColumnModel().getColumn(2).setResizable(false);
+            dataTable.getColumnModel().getColumn(2).setPreferredWidth(130);
             dataTable.getColumnModel().getColumn(3).setResizable(false);
+            dataTable.getColumnModel().getColumn(3).setPreferredWidth(120);
+            dataTable.getColumnModel().getColumn(4).setResizable(false);
+            dataTable.getColumnModel().getColumn(4).setPreferredWidth(130);
             dataTable.getColumnModel().getColumn(5).setResizable(false);
+            dataTable.getColumnModel().getColumn(5).setPreferredWidth(250);
             dataTable.getColumnModel().getColumn(6).setResizable(false);
+            dataTable.getColumnModel().getColumn(6).setPreferredWidth(100);
         }
 
         createPatientBtn.setFont(new java.awt.Font("Ubuntu", 0, 15)); // NOI18N
@@ -103,6 +122,8 @@ public class HomePatients extends javax.swing.JFrame {
                 createPatientBtnMouseClicked(evt);
             }
         });
+
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ninguno", "No. Identificación", "Nombre", "Apellido" }));
 
         filesMenu.setText("Archivos");
         filesMenu.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -153,17 +174,18 @@ public class HomePatients extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(50, 50, 50)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(searchPatientField, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(searchPatientBtn)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(createPatientBtn))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1180, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(50, Short.MAX_VALUE))
+                    .addComponent(jLabel1)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(searchPatientField, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(18, 18, 18)
+                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(searchPatientBtn)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(createPatientBtn))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1180, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(50, 50, 50))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -171,11 +193,11 @@ public class HomePatients extends javax.swing.JFrame {
                 .addGap(8, 8, 8)
                 .addComponent(jLabel1)
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(createPatientBtn, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(searchPatientField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(searchPatientBtn)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(searchPatientField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(searchPatientBtn)
+                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(createPatientBtn))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 555, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(50, 50, 50))
@@ -200,7 +222,7 @@ public class HomePatients extends javax.swing.JFrame {
     private void homeMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeMenuMouseClicked
         // Cerrar ventana de inicio
         this.dispose();
-        
+
         // Abrir ventana de página de inicio
         Home home = new Home(receptionist.getId(), receptionist.getFullName());
         home.setVisible(true);
@@ -218,7 +240,7 @@ public class HomePatients extends javax.swing.JFrame {
     private void reportsMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_reportsMenuMouseClicked
         // Cerrar ventana de inicio
         this.dispose();
-        
+
         // Abrir ventana de reportes
         HomeReports homeReports = new HomeReports(receptionist.getId(), receptionist.getFullName());
         homeReports.setVisible(true);
@@ -246,6 +268,53 @@ public class HomePatients extends javax.swing.JFrame {
         CreatePatient createPatient = new CreatePatient(receptionist.getId(), receptionist.getFullName());
         createPatient.setVisible(true);
     }//GEN-LAST:event_createPatientBtnMouseClicked
+
+    // Impresión de datos en JTable
+    private void loadTableData() {
+        try {
+            // Formato para mostrar fechas
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+            Patients util = new Patients();
+            ArrayList<Patient> patients = util.readAll();
+
+            DefaultTableModel model = (DefaultTableModel) dataTable.getModel();
+            model.setRowCount(0);
+
+            // Centrar contenido de las celdas
+            DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+            centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+            for (int i = 0; i < dataTable.getColumnCount(); i++) {
+                dataTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+            }
+
+            for (Patient patient : patients) {
+
+                // Se cambia el género de sólo su inicial al nombre completo
+                if (patient.getGender().equals("M")) {
+                    patient.setGender("Masculino");
+                } else {
+                    patient.setGender("Femenino");
+                }
+
+                model.addRow(new Object[]{
+                    patient.getID(),
+                    patient.getName() + " " + patient.getLastname(),
+                    formatter.format(patient.getBirthdate()),
+                    patient.getGender(),
+                    patient.getCellphone(),
+                    patient.getEmail(),
+                    patient.getBloodType()
+                });
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "Error al cargar los datos: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
     /**
      * @param args the command line arguments
@@ -278,6 +347,7 @@ public class HomePatients extends javax.swing.JFrame {
     private javax.swing.JMenu doctorsMenu;
     private javax.swing.JMenu filesMenu;
     private javax.swing.JMenu homeMenu;
+    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane1;

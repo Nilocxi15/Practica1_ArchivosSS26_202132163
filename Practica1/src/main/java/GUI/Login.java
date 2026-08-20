@@ -113,7 +113,9 @@ public class Login extends javax.swing.JFrame {
             final int fullNameSize = 16;
             final int passwordSize = 2;
 
-            // Arreglo de objetos
+            /* 
+             * Arreglo de objetos           
+            */
             Receptionist receptionist;
 
             RandomAccessFile raf = new RandomAccessFile("data/roles.dat", "r");
