@@ -8,6 +8,11 @@ import models.Patient;
 import models.Receptionist;
 import util.Patients;
 
+/* Nota:
+ * Debo de verificar que los campos obligatorios si vengan. De momento no los verifico, entonces
+ * debo agregar esas verificaciones. Los campos son todos, excepto correo electrónico.
+*/
+
 public class CreatePatient extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CreatePatient.class.getName());
