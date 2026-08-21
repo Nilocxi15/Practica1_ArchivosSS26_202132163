@@ -35,7 +35,7 @@ public class HomePatients extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         this.setTitle("Pacientes");
-        this.loadTableData();
+        this.loadTableData(null);
     }
 
     /**
@@ -53,7 +53,7 @@ public class HomePatients extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         dataTable = new javax.swing.JTable();
         createPatientBtn = new javax.swing.JButton();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        attributeComboBox = new javax.swing.JComboBox<>();
         jMenuBar1 = new javax.swing.JMenuBar();
         filesMenu = new javax.swing.JMenu();
         homeMenu = new javax.swing.JMenu();
@@ -123,7 +123,7 @@ public class HomePatients extends javax.swing.JFrame {
             }
         });
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ninguno", "No. Identificación", "Nombre", "Apellido" }));
+        attributeComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ninguno", "No. Identificación", "Nombre", "Apellido" }));
 
         filesMenu.setText("Archivos");
         filesMenu.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -179,7 +179,7 @@ public class HomePatients extends javax.swing.JFrame {
                         .addGroup(layout.createSequentialGroup()
                             .addComponent(searchPatientField, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGap(18, 18, 18)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(attributeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(searchPatientBtn)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -196,7 +196,7 @@ public class HomePatients extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(searchPatientField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(searchPatientBtn)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(attributeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(createPatientBtn))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 555, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -256,11 +256,15 @@ public class HomePatients extends javax.swing.JFrame {
     }//GEN-LAST:event_logoutMenuMouseClicked
 
     private void searchPatientFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchPatientFieldActionPerformed
-        // TODO add your handling code here:
+        Patients util = new Patients();
+        ArrayList<Patient> patients = util.searchData(searchPatientField.getText().trim(), attributeComboBox.getSelectedIndex());
+        loadTableData(patients);
     }//GEN-LAST:event_searchPatientFieldActionPerformed
 
     private void searchPatientBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_searchPatientBtnMouseClicked
-        // TODO add your handling code here:
+        Patients util = new Patients();
+        ArrayList<Patient> patients = util.searchData(searchPatientField.getText().trim(), attributeComboBox.getSelectedIndex());
+        loadTableData(patients);
     }//GEN-LAST:event_searchPatientBtnMouseClicked
 
     private void createPatientBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createPatientBtnMouseClicked
@@ -270,13 +274,15 @@ public class HomePatients extends javax.swing.JFrame {
     }//GEN-LAST:event_createPatientBtnMouseClicked
 
     // Impresión de datos en JTable
-    private void loadTableData() {
+    private void loadTableData(ArrayList<Patient> dataList) {
         try {
             // Formato para mostrar fechas
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-            Patients util = new Patients();
-            ArrayList<Patient> patients = util.readAll();
+            if (dataList == null) {
+                Patients util = new Patients();
+                dataList = util.readAll();
+            }
 
             DefaultTableModel model = (DefaultTableModel) dataTable.getModel();
             model.setRowCount(0);
@@ -289,7 +295,7 @@ public class HomePatients extends javax.swing.JFrame {
                 dataTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
             }
 
-            for (Patient patient : patients) {
+            for (Patient patient : dataList) {
 
                 // Se cambia el género de sólo su inicial al nombre completo
                 if (patient.getGender().equals("M")) {
@@ -342,12 +348,12 @@ public class HomePatients extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> attributeComboBox;
     private javax.swing.JButton createPatientBtn;
     private javax.swing.JTable dataTable;
     private javax.swing.JMenu doctorsMenu;
     private javax.swing.JMenu filesMenu;
     private javax.swing.JMenu homeMenu;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane1;

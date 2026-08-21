@@ -8,11 +8,6 @@ import models.Patient;
 import models.Receptionist;
 import util.Patients;
 
-/* Nota:
- * Debo de verificar que los campos obligatorios si vengan. De momento no los verifico, entonces
- * debo agregar esas verificaciones. Los campos son todos, excepto correo electrónico.
-*/
-
 public class CreatePatient extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CreatePatient.class.getName());
@@ -199,7 +194,7 @@ public class CreatePatient extends javax.swing.JFrame {
         if (names.length() > 50 | lastnames.length() > 50) {
             JOptionPane.showMessageDialog(null, "El tamaño máximo de la cadena para nombres o apellidos es de 50 carácteres contando espacios.", "Campo de Nombre o Apellido Demasiado Largo", JOptionPane.ERROR_MESSAGE);
             return;
-        }
+        }               
         
         if (cellphone.length() > 14) {
             JOptionPane.showMessageDialog(null, "Por favor verifica que ingresaste un número de celular con formato de Guatemala.", "Formato de Celular Incorrecto", JOptionPane.ERROR_MESSAGE);
@@ -209,7 +204,31 @@ public class CreatePatient extends javax.swing.JFrame {
         if (email.length() > 100) {
             JOptionPane.showMessageDialog(null, "Posr favor ingresa una dirección de correo electrónico más corta.", "Dirección de Correo Demasiado Larga", JOptionPane.ERROR_MESSAGE);
             return;
-        }       
+        }
+        
+        // Verificación de obligatoriedad de campos
+        if (names.isBlank()) {
+            JOptionPane.showMessageDialog(null, "Por favor ingrese los nombres del paciente", "Nombre Vacío", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        if (lastnames.isBlank()) {
+            JOptionPane.showMessageDialog(null, "Por favor ingrese los apellidos del paciente", "Apellido Vacío", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        if (cellphone.isBlank()) {
+            JOptionPane.showMessageDialog(null, "Por favor ingresa el número celular del paciente", "Celular Vacío", JOptionPane.ERROR_MESSAGE);
+            return;
+        }          
+        
+        // Verificación de RegEx de número celular
+        String regex = "^(?:\\+502 ?)?\\d{4}-?\\d{4}$";
+        
+        if (!(cellphone.matches(regex))) {
+            JOptionPane.showMessageDialog(null, "Por favor, ingrese un número telefónico guatemalteco válido.", "Número Celular Inválido", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         
         // Obtención y verificación de la fecha de nacimiento
         try {
@@ -231,14 +250,9 @@ public class CreatePatient extends javax.swing.JFrame {
         String gender;
         
         switch (genderComboBox.getSelectedIndex()) {
-            case 0:
-                gender = "M";
-                break;
-            case 1:
-                gender = "F";
-                break;
-            default:
-                throw new AssertionError();
+            case 0 -> gender = "M";
+            case 1 -> gender = "F";
+            default -> throw new AssertionError();
         }       
         
         Patient patient = new Patient(id, names, lastnames, birthDateLD, gender, cellphone, email, bloodType);

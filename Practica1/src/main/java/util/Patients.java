@@ -165,7 +165,7 @@ public class Patients {
                 String cellphone = new String(cellphoneData).trim();
                 String email = new String(emailData).trim();
                 String bloodType = new String(bloodTypeData).trim();
-                
+
                 // Verificación de espacios en blanco (se ignoran)
                 if (id.isBlank()) {
                     continue;
@@ -173,16 +173,54 @@ public class Patients {
 
                 // Parseo de String a LocalDate
                 LocalDate birthdate = LocalDate.parse(birthdateStr);
-                
+
                 // Llenado de ArrayList
                 patient = new Patient(id, name, lastname, birthdate, gender, cellphone, email, bloodType);
                 patients.add(patient);
             }
-            
+
             return patients;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public ArrayList<Patient> searchData(String data, int attribute) {
+        ArrayList<Patient> patients = readAll();
+        ArrayList<Patient> patientsFiltered = new ArrayList<>();
+        
+        switch (attribute) {
+            case 0: // Ninguno
+                return null;
+            case 1: // No. Identificación                                
+                // Filtrado de búsqueda                
+                for (Patient patient : patients) {
+                    if (patient.getID().contains(data)) {
+                        patientsFiltered.add(patient);
+                    }
+                }
+                break;
+            case 2: // Nombre  
+                // Filtrado de búsqueda
+                for (Patient patient : patients) {
+                    if (patient.getName().contains(data)) {
+                        patientsFiltered.add(patient);
+                    }
+                }
+                break;
+            case 3: // Apellido
+                // Filtrado de búsqueda
+                for (Patient patient : patients) {
+                    if (patient.getLastname().contains(data)) {
+                        patientsFiltered.add(patient);
+                    }
+                }
+                break;
+            default:
+                patientsFiltered = null;
+                throw new AssertionError();
+        }
+        return patientsFiltered;
     }
 }
