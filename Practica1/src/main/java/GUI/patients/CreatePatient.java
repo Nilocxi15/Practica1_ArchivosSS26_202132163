@@ -179,57 +179,65 @@ public class CreatePatient extends javax.swing.JFrame {
         // Obtención de valores
         String id = idField.getText();
         String names = namesInput.getText();
-        String lastnames = lastnamesInput.getText();                
+        String lastnames = lastnamesInput.getText();
         String cellphone = cellphoneInput.getText();
         String email = emailInput.getText();
         String bloodType = bloodComboBox.getItemAt(bloodComboBox.getSelectedIndex());
         Date birthdate;
-        
+
         // Verificación de longitud de campos
         if (id.length() != 13) {
             JOptionPane.showMessageDialog(null, "El número de identificación personal debe ser de 13 dígitos y sin espacios.", "Campo Incorrecto", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
+
         if (names.length() > 50 | lastnames.length() > 50) {
             JOptionPane.showMessageDialog(null, "El tamaño máximo de la cadena para nombres o apellidos es de 50 carácteres contando espacios.", "Campo de Nombre o Apellido Demasiado Largo", JOptionPane.ERROR_MESSAGE);
             return;
-        }               
-        
+        }
+
         if (cellphone.length() > 14) {
             JOptionPane.showMessageDialog(null, "Por favor verifica que ingresaste un número de celular con formato de Guatemala.", "Formato de Celular Incorrecto", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
+
         if (email.length() > 100) {
             JOptionPane.showMessageDialog(null, "Posr favor ingresa una dirección de correo electrónico más corta.", "Dirección de Correo Demasiado Larga", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
+
         // Verificación de obligatoriedad de campos
         if (names.isBlank()) {
             JOptionPane.showMessageDialog(null, "Por favor ingrese los nombres del paciente", "Nombre Vacío", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
+
         if (lastnames.isBlank()) {
             JOptionPane.showMessageDialog(null, "Por favor ingrese los apellidos del paciente", "Apellido Vacío", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
+
         if (cellphone.isBlank()) {
             JOptionPane.showMessageDialog(null, "Por favor ingresa el número celular del paciente", "Celular Vacío", JOptionPane.ERROR_MESSAGE);
             return;
-        }          
-        
+        }
+
+        // Verificación de RegEx de número de identificación
+        String regex = "^[0-9]{13}$";
+
+        if (!(id.matches(regex))) {
+            JOptionPane.showMessageDialog(null, "El número de identificación personal debe contener solamente números", "ID Incorrecto", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         // Verificación de RegEx de número celular
-        String regex = "^(?:\\+502 ?)?\\d{4}-?\\d{4}$";
-        
+        regex = "^(?:\\+502 ?)?\\d{4}-?\\d{4}$";
+
         if (!(cellphone.matches(regex))) {
             JOptionPane.showMessageDialog(null, "Por favor, ingrese un número telefónico guatemalteco válido.", "Número Celular Inválido", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
+
         // Obtención y verificación de la fecha de nacimiento
         try {
             birthdate = birthDateChooser.getDate();
@@ -238,27 +246,29 @@ public class CreatePatient extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Por favor verifica que hayas ingresado correctamente la fecha de nacimiento.", "Error Inesperado", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
+
         /* 
          * Al pasar todos los filtros, se procede a la creación de un objeto Patient y su registro en archivo persitente       
-        */
-        
+         */
         // Parseo de variable de fecha
-        LocalDate birthDateLD = birthdate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();        
-        
+        LocalDate birthDateLD = birthdate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
         // Setteo de Variables
         String gender;
-        
+
         switch (genderComboBox.getSelectedIndex()) {
-            case 0 -> gender = "M";
-            case 1 -> gender = "F";
-            default -> throw new AssertionError();
-        }       
-        
+            case 0 ->
+                gender = "M";
+            case 1 ->
+                gender = "F";
+            default ->
+                throw new AssertionError();
+        }
+
         Patient patient = new Patient(id, names, lastnames, birthDateLD, gender, cellphone, email, bloodType);
         Patients util = new Patients();
         boolean success = util.writeRegister(patient);
-        
+
         if (!success) {
             JOptionPane.showMessageDialog(null, "No fue posible registrar la información del paciente. Vuelve a intentarlo.", "Error Inesperado", JOptionPane.ERROR_MESSAGE);
             this.dispose();

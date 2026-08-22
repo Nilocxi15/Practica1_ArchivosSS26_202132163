@@ -87,3 +87,7 @@ public class Patient {
     }
 
 }
+
+/*
+patient.setName(String.format("%-50s", patient.getName()));
+*/

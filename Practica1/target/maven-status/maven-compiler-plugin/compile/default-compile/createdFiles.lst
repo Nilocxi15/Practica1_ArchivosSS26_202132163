@@ -3,6 +3,7 @@ models/Receptionist.class
 models/Appointment.class
 com/mycompany/practica1/Practica1.class
 GUI/patients/HomePatients$7.class
+GUI/patients/HomePatients$9.class
 GUI/appointments/CreateAppointment.class
 models/Doctor.class
 GUI/patients/HomePatients$4.class

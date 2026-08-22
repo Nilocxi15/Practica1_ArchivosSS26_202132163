@@ -97,6 +97,11 @@ public class HomePatients extends javax.swing.JFrame {
         });
         dataTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_LAST_COLUMN);
         dataTable.getTableHeader().setReorderingAllowed(false);
+        dataTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                dataTableMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(dataTable);
         if (dataTable.getColumnModel().getColumnCount() > 0) {
             dataTable.getColumnModel().getColumn(0).setResizable(false);
@@ -272,6 +277,19 @@ public class HomePatients extends javax.swing.JFrame {
         CreatePatient createPatient = new CreatePatient(receptionist.getId(), receptionist.getFullName());
         createPatient.setVisible(true);
     }//GEN-LAST:event_createPatientBtnMouseClicked
+
+    private void dataTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dataTableMouseClicked
+        if (evt.getClickCount() == 2) {
+            int row = dataTable.rowAtPoint(evt.getPoint());
+            
+            if (row >= 0) {
+                Object value = dataTable.getValueAt(row, 0);
+                
+                DeleteUpdatePatient duPatient = new DeleteUpdatePatient(String.valueOf(value));
+                duPatient.setVisible(true);
+            }
+        }
+    }//GEN-LAST:event_dataTableMouseClicked
 
     // Impresión de datos en JTable
     private void loadTableData(ArrayList<Patient> dataList) {

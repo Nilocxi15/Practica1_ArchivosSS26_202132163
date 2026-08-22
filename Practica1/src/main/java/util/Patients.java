@@ -72,7 +72,8 @@ public class Patients {
                 tempId = new String(idData).trim();
 
                 // Si encuentra un registro "eliminado" escribe datos en esa posición
-                if (tempId.equals("NULL")) {
+                String idEliminated = "".repeat(idSize);
+                if (tempId.equals(idEliminated)) {
                     long position = raf.getFilePointer();
                     position = position - registerSize;
                     raf.seek(position);
@@ -189,7 +190,7 @@ public class Patients {
     public ArrayList<Patient> searchData(String data, int attribute) {
         ArrayList<Patient> patients = readAll();
         ArrayList<Patient> patientsFiltered = new ArrayList<>();
-        
+
         switch (attribute) {
             case 0: // Ninguno
                 return null;
@@ -222,5 +223,89 @@ public class Patients {
                 throw new AssertionError();
         }
         return patientsFiltered;
+    }
+
+    public Patient searchRegister(String id) {
+        ArrayList<Patient> patients = readAll();
+
+        Patient p = null;
+
+        for (Patient patient : patients) {
+            if (patient.getID().equals(id)) {
+                p = patient;
+            }
+        }
+
+        return p;
+    }
+
+    public boolean deleteRegister(String id) {
+        if (id.equals("-1")) {
+            return false;
+        }
+
+        try {
+            // Declaración de tamaños específicos de cada campo
+            final int idSize = 13;
+            final int nameSize = 50;
+            final int lastnameSize = 50;
+            final int birthdateSize = 10;
+            final int genderSize = 1;
+            final int cellphoneSize = 14;
+            final int emailSize = 100;
+            final int bloodTypeSize = 3;
+
+            final int registerSize = idSize + nameSize + lastnameSize
+                    + birthdateSize + genderSize + cellphoneSize + emailSize
+                    + bloodTypeSize + 1;
+            
+            final int fieldsSize = registerSize - idSize - 1;
+
+            RandomAccessFile raf = new RandomAccessFile("data/patients.dat", "rw");            
+            
+            long totalRegisters = raf.length() / registerSize;
+            
+            String tempId = null;
+
+            // Búsqueda de campo con el ID del paciente
+            for (int i = 0; i < totalRegisters; i++) {
+                byte[] idData = new byte[idSize];
+                byte[] fieldsData = new byte[fieldsSize];
+
+                raf.readFully(idData);
+                raf.readFully(fieldsData);
+                raf.readByte();
+
+                tempId = new String(idData).trim();
+
+                if (tempId.equals(id)) {
+                    long position = raf.getFilePointer();
+                    position = position - registerSize;
+                    raf.seek(position);
+                    // Eliminación de datos
+                    raf.writeBytes(" ".repeat(idSize));
+                    raf.writeBytes(" ".repeat(nameSize));
+                    raf.writeBytes(" ".repeat(lastnameSize));
+                    raf.writeBytes(" ".repeat(birthdateSize));
+                    raf.writeBytes(" ".repeat(genderSize));
+                    raf.writeBytes(" ".repeat(cellphoneSize));
+                    raf.writeBytes(" ".repeat(emailSize));
+                    raf.writeBytes(" ".repeat(bloodTypeSize));
+                    raf.writeBytes("\n");
+                    raf.close();
+                    return true;
+                }
+            }
+            raf.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public boolean updatePatient(Patient p) {
+        return false;
     }
 }
