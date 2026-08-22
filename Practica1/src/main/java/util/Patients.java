@@ -240,7 +240,8 @@ public class Patients {
     }
 
     public boolean deleteRegister(String id) {
-        if (id.equals("-1")) {
+        String deletedId = " ".repeat(13);
+        if (id.equals(deletedId)) {
             return false;
         }
 
@@ -258,13 +259,13 @@ public class Patients {
             final int registerSize = idSize + nameSize + lastnameSize
                     + birthdateSize + genderSize + cellphoneSize + emailSize
                     + bloodTypeSize + 1;
-            
+
             final int fieldsSize = registerSize - idSize - 1;
 
-            RandomAccessFile raf = new RandomAccessFile("data/patients.dat", "rw");            
-            
+            RandomAccessFile raf = new RandomAccessFile("data/patients.dat", "rw");
+
             long totalRegisters = raf.length() / registerSize;
-            
+
             String tempId = null;
 
             // Búsqueda de campo con el ID del paciente
@@ -306,6 +307,67 @@ public class Patients {
     }
 
     public boolean updatePatient(Patient p) {
+        String deletedId = " ".repeat(13);
+        if (p.getID().equals(deletedId)) {
+            return false;
+        }
+
+        try {
+            // Declaración de tamaños específicos de cada campo
+            final int idSize = 13;
+            final int nameSize = 50;
+            final int lastnameSize = 50;
+            final int birthdateSize = 10;
+            final int genderSize = 1;
+            final int cellphoneSize = 14;
+            final int emailSize = 100;
+            final int bloodTypeSize = 3;
+
+            final int registerSize = idSize + nameSize + lastnameSize
+                    + birthdateSize + genderSize + cellphoneSize + emailSize
+                    + bloodTypeSize + 1;
+
+            final int fieldsSize = registerSize - idSize - 1;
+
+            RandomAccessFile raf = new RandomAccessFile("data/patients.dat", "rw");
+
+            long totalRegisters = raf.length() / registerSize;
+
+            String tempId = null;
+
+            // Búsqueda de campo con el ID del paciente
+            for (int i = 0; i < totalRegisters; i++) {
+                byte[] idData = new byte[idSize];
+                byte[] fieldsData = new byte[fieldsSize];
+
+                raf.readFully(idData);
+                raf.readFully(fieldsData);
+                raf.readByte();
+
+                tempId = new String(idData).trim();
+
+                if (tempId.equals(p.getID())) {
+                    long position = raf.getFilePointer();
+                    position = position - fieldsSize - 1; // Coloca el puntero después del ID del registro
+                    raf.seek(position);
+                    // Actualización de datos del registro                    
+                    raf.writeBytes(String.format("%-50s", p.getName()));
+                    raf.writeBytes(String.format("%-50s", p.getLastname()));
+                    raf.writeBytes(p.getBirthdate().toString());
+                    raf.writeBytes(p.getGender());
+                    raf.writeBytes(String.format("%-14s", p.getCellphone()));
+                    raf.writeBytes(String.format("%-100s", p.getEmail()));
+                    raf.writeBytes(String.format("%-3s", p.getBloodType()));
+                    raf.writeBytes("\n");
+                    raf.close();
+                    return true;
+                }
+            }
+            raf.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return false;
     }
 }
