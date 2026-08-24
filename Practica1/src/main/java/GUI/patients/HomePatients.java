@@ -264,12 +264,20 @@ public class HomePatients extends javax.swing.JFrame {
         Patients util = new Patients();
         ArrayList<Patient> patients = util.searchData(searchPatientField.getText().trim(), attributeComboBox.getSelectedIndex());
         loadTableData(patients);
+
+        if (attributeComboBox.getSelectedIndex() == 0) {
+            searchPatientField.setText("");
+        }
     }//GEN-LAST:event_searchPatientFieldActionPerformed
 
     private void searchPatientBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_searchPatientBtnMouseClicked
         Patients util = new Patients();
         ArrayList<Patient> patients = util.searchData(searchPatientField.getText().trim(), attributeComboBox.getSelectedIndex());
         loadTableData(patients);
+
+        if (attributeComboBox.getSelectedIndex() == 0) {
+            searchPatientField.setText("");
+        }
     }//GEN-LAST:event_searchPatientBtnMouseClicked
 
     private void createPatientBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createPatientBtnMouseClicked
@@ -281,10 +289,10 @@ public class HomePatients extends javax.swing.JFrame {
     private void dataTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dataTableMouseClicked
         if (evt.getClickCount() == 2) {
             int row = dataTable.rowAtPoint(evt.getPoint());
-            
+
             if (row >= 0) {
                 Object value = dataTable.getValueAt(row, 0);
-                
+
                 DeleteUpdatePatient duPatient = new DeleteUpdatePatient(String.valueOf(value));
                 duPatient.setVisible(true);
             }
