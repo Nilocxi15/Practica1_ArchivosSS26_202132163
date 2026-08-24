@@ -25,7 +25,7 @@ public class Patients {
 
                 raf.readFully(idData);
                 raf.readFully(fieldsData);
-                raf.readByte();
+                raf.readByte();                
 
                 tempId = new String(idData).trim();
 
@@ -67,12 +67,12 @@ public class Patients {
 
                 raf.readFully(idData);
                 raf.readFully(fieldsData);
-                raf.readByte();
+                raf.readByte();                
 
                 tempId = new String(idData).trim();
 
                 // Si encuentra un registro "eliminado" escribe datos en esa posición
-                String idEliminated = "".repeat(idSize);
+                String idEliminated = " ".repeat(idSize);
                 if (tempId.equals(idEliminated)) {
                     long position = raf.getFilePointer();
                     position = position - registerSize;
@@ -155,7 +155,7 @@ public class Patients {
                 raf.readFully(cellphoneData);
                 raf.readFully(emailData);
                 raf.readFully(bloodTypeData);
-                raf.readByte(); // Salto de línea
+                raf.readByte(); // Salto de línea                
 
                 // Parseo de datos binarios a String
                 String id = new String(idData).trim();
@@ -275,7 +275,7 @@ public class Patients {
 
                 raf.readFully(idData);
                 raf.readFully(fieldsData);
-                raf.readByte();
+                raf.readByte();                
 
                 tempId = new String(idData).trim();
 

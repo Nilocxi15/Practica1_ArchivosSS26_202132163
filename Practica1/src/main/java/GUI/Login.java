@@ -130,6 +130,7 @@ public class Login extends javax.swing.JFrame {
                 raf.readFully(fullNameData);
                 raf.readFully(passwordData);
                 raf.readByte();
+                raf.readByte();
 
                 // Parse de datos binarios a string
                 String id = new String(idData).trim();
