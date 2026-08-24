@@ -113,7 +113,9 @@ public class Login extends javax.swing.JFrame {
             final int fullNameSize = 16;
             final int passwordSize = 2;
 
-            // Arreglo de objetos
+            /* 
+             * Arreglo de objetos           
+            */
             Receptionist receptionist;
 
             RandomAccessFile raf = new RandomAccessFile("data/roles.dat", "r");
@@ -127,6 +129,7 @@ public class Login extends javax.swing.JFrame {
                 raf.readFully(idData);
                 raf.readFully(fullNameData);
                 raf.readFully(passwordData);
+                raf.readByte();
                 raf.readByte();
 
                 // Parse de datos binarios a string
