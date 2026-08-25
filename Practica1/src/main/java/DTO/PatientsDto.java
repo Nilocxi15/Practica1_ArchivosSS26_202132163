@@ -1,11 +1,11 @@
-package util;
+package DTO;
 
 import java.io.RandomAccessFile;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import models.Patient;
 
-public class Patients {
+public class PatientsDto {
 
     public boolean writeRegister(Patient patient) {
         // Verificación de id's en registros
@@ -30,6 +30,7 @@ public class Patients {
                 tempId = new String(idData).trim();
 
                 if (tempId.equals(patient.getID())) {
+                    raf.close();
                     return false;
                 }
             }
@@ -71,9 +72,8 @@ public class Patients {
 
                 tempId = new String(idData).trim();
 
-                // Si encuentra un registro "eliminado" escribe datos en esa posición
-                String idEliminated = " ".repeat(idSize);
-                if (tempId.equals(idEliminated)) {
+                // Si encuentra un registro "eliminado" escribe datos en esa posición                
+                if (tempId.isBlank()) {
                     long position = raf.getFilePointer();
                     position = position - registerSize;
                     raf.seek(position);
@@ -106,6 +106,7 @@ public class Patients {
             raf.close();
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
 
         return true;
@@ -127,7 +128,7 @@ public class Patients {
                     + birthdateSize + genderSize + cellphoneSize + emailSize
                     + bloodTypeSize + 1;
             /*
-             * Arreglo de objetos
+             * Arreglo de objetos tipo Patient
              */
             Patient patient;
             ArrayList<Patient> patients = new ArrayList<>();

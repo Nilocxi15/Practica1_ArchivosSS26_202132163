@@ -13,8 +13,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import models.Patient;
 import models.Receptionist;
-import util.Patients;
-import util.Reports;
+import DTO.PatientsDto;
+import DTO.ReportsDto;
 
 public class HomePatients extends javax.swing.JFrame {
 
@@ -213,7 +213,7 @@ public class HomePatients extends javax.swing.JFrame {
 
     private void filesMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_filesMenuMouseClicked
         // Verificación y creación de carpeta de reportes en caso no exista
-        Reports reports = new Reports();
+        ReportsDto reports = new ReportsDto();
         try {
             reports.createFolder();
 
@@ -261,7 +261,7 @@ public class HomePatients extends javax.swing.JFrame {
     }//GEN-LAST:event_logoutMenuMouseClicked
 
     private void searchPatientFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchPatientFieldActionPerformed
-        Patients util = new Patients();
+        PatientsDto util = new PatientsDto();
         ArrayList<Patient> patients = util.searchData(searchPatientField.getText().trim(), attributeComboBox.getSelectedIndex());
         loadTableData(patients);
 
@@ -271,7 +271,7 @@ public class HomePatients extends javax.swing.JFrame {
     }//GEN-LAST:event_searchPatientFieldActionPerformed
 
     private void searchPatientBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_searchPatientBtnMouseClicked
-        Patients util = new Patients();
+        PatientsDto util = new PatientsDto();
         ArrayList<Patient> patients = util.searchData(searchPatientField.getText().trim(), attributeComboBox.getSelectedIndex());
         loadTableData(patients);
 
@@ -306,7 +306,7 @@ public class HomePatients extends javax.swing.JFrame {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
             if (dataList == null) {
-                Patients util = new Patients();
+                PatientsDto util = new PatientsDto();
                 dataList = util.readAll();
             }
 

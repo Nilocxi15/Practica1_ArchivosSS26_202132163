@@ -1,22 +1,26 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package GUI.doctors;
 
-/**
- *
- * @author hamme
- */
+import models.Receptionist;
+
 public class DeleteUpdateDoctor extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DeleteUpdateDoctor.class.getName());
 
+    Receptionist receptionist;
+    
     /**
      * Creates new form DeleteUpdateDoctor
      */
     public DeleteUpdateDoctor() {
         initComponents();
+    }
+    
+    public DeleteUpdateDoctor(String id, String fullname) {
+        receptionist = new Receptionist(id, fullname, "");
+        initComponents();
+        this.setLocationRelativeTo(null);
+        this.setTitle("Actualizar - Eliminar Registros");
+        
     }
 
     /**

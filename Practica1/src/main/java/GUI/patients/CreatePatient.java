@@ -6,7 +6,7 @@ import java.util.Date;
 import javax.swing.JOptionPane;
 import models.Patient;
 import models.Receptionist;
-import util.Patients;
+import DTO.PatientsDto;
 
 public class CreatePatient extends javax.swing.JFrame {
 
@@ -177,11 +177,11 @@ public class CreatePatient extends javax.swing.JFrame {
 
     private void createBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createBtnActionPerformed
         // Obtención de valores
-        String id = idField.getText();
-        String names = namesInput.getText();
-        String lastnames = lastnamesInput.getText();
-        String cellphone = cellphoneInput.getText();
-        String email = emailInput.getText();
+        String id = idField.getText().trim();
+        String names = namesInput.getText().trim();
+        String lastnames = lastnamesInput.getText().trim();
+        String cellphone = cellphoneInput.getText().trim();
+        String email = emailInput.getText().trim();
         String bloodType = bloodComboBox.getItemAt(bloodComboBox.getSelectedIndex());
         Date birthdate;
 
@@ -192,7 +192,7 @@ public class CreatePatient extends javax.swing.JFrame {
         }
 
         if (names.length() > 50 | lastnames.length() > 50) {
-            JOptionPane.showMessageDialog(null, "El tamaño máximo de la cadena para nombres o apellidos es de 50 carácteres contando espacios.", "Campo de Nombre o Apellido Demasiado Largo", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "El tamaño máximo de la cadena para nombres o apellidos es de 50 carácteres, contando espacios.", "Campo de Nombre o Apellido Demasiado Largo", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -266,7 +266,7 @@ public class CreatePatient extends javax.swing.JFrame {
         }
 
         Patient patient = new Patient(id, names, lastnames, birthDateLD, gender, cellphone, email, bloodType);
-        Patients util = new Patients();
+        PatientsDto util = new PatientsDto();
         boolean success = util.writeRegister(patient);
 
         if (!success) {
