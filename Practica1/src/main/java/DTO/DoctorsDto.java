@@ -68,6 +68,7 @@ public class DoctorsDto {
             String endHour = doctor.getEndShift().format(format);
 
             // Parseo de boolean a String (estado del registro)
+            doctor.setState(true);
             String stateStr = doctor.isState() ? "1" : "0";
 
             long totalRegisters = raf.length() / registerSize;
@@ -196,7 +197,7 @@ public class DoctorsDto {
                 LocalTime endHour = LocalTime.parse(endShift, dtf);
 
                 // Parse de String a boolean
-                boolean stateBool = Boolean.parseBoolean(state);
+                boolean stateBool = "1".equals(state);
 
                 // Llenado de ArrayList
                 doctor = new Doctor(id, name, lastname, speciality, cellphone, email, startHour, endHour, stateBool);
@@ -210,14 +211,53 @@ public class DoctorsDto {
         }
     }
 
-    public ArrayList<Doctor> searchData(String data, int attribute) {
-        ArrayList<Doctor> doctors = readAll();
+    public ArrayList<Doctor> readDoctorsActives() {
+        // Obtención de registros de la función principal (readAll)
+        ArrayList<Doctor> allDoctors = readAll();
+        ArrayList<Doctor> activeDoctors = new ArrayList<>();
+
+        if (allDoctors != null) {
+            for (Doctor doctor : allDoctors) {
+                if (doctor.isState()) {
+                    activeDoctors.add(doctor);
+                }
+            }
+        }
+
+        return activeDoctors;
+    }
+
+    public ArrayList<Doctor> readDoctorsInactive() {
+        // Obtención de registros de la función principal (readAll)
+        ArrayList<Doctor> allDoctors = readAll();
+        ArrayList<Doctor> activeDoctors = new ArrayList<>();
+
+        if (allDoctors != null) {
+            for (Doctor doctor : allDoctors) {
+                if (!doctor.isState()) {
+                    activeDoctors.add(doctor);
+                }
+            }
+        }
+
+        return activeDoctors;
+    }
+
+    public ArrayList<Doctor> searchData(String data, int attribute, int state) {
+        ArrayList<Doctor> doctors;
         ArrayList<Doctor> doctorsFiltered = new ArrayList<>();
+
+        switch (state) {
+            case 0 -> doctors = readAll();
+            case 1 -> doctors = readDoctorsActives();
+            case 2 -> doctors = readDoctorsInactive();
+            default -> throw new AssertionError();
+        }
 
         // ID, nombre, apellido, especialidad
         switch (attribute) {
             case 0: // Ninguno
-                return null;
+                return doctors;
             case 1:// ID
                 for (Doctor doctor : doctors) {
                     if (doctor.getId().contains(data)) {

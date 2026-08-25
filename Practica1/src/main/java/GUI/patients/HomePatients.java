@@ -321,6 +321,7 @@ public class HomePatients extends javax.swing.JFrame {
                 dataTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
             }
 
+            // Llenado de tabla
             for (Patient patient : dataList) {
 
                 // Se cambia el género de sólo su inicial al nombre completo

@@ -2,6 +2,8 @@ package GUI.doctors;
 
 import DTO.DoctorsDto;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.UUID;
 import javax.swing.JOptionPane;
 import models.Doctor;
@@ -304,9 +306,15 @@ public class CreateDoctor extends javax.swing.JFrame {
 
         LocalTime finalHourStart;
         LocalTime finalHourEnd;
+        String startShiftFormatted;
+        String endShiftFormatted;
+        
+        // Formateador de 12 horas
+        DateTimeFormatter dtf12h = DateTimeFormatter.ofPattern("hh:mm a", Locale.ENGLISH);
 
         // Armado y verificación de horas de turno
         try {
+            // Validación de rangos
             if (startHourShift < 1 || startHourShift > 12 || endHourShift < 1 || endHourShift > 12) {
                 JOptionPane.showMessageDialog(null, "Solamente es posible ingresar horas en un rango de 1 - 12.", "Hora Inválida", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -317,7 +325,7 @@ public class CreateDoctor extends javax.swing.JFrame {
                 return;
             }
 
-            // Parseo de int a LocalTime del inicio del turno
+            // Conversión a formato 24h para inicio de turno
             int hour24 = startHourShift;
 
             if ("PM".equals(startShiftDaypartIndicator) && startHourShift < 12) {
@@ -328,7 +336,7 @@ public class CreateDoctor extends javax.swing.JFrame {
 
             finalHourStart = LocalTime.of(hour24, startMinuteShift);
 
-            // Parseo de int a LocalTime del fin del turno
+            // Conversión a formato 24h para fin de turno
             hour24 = endHourShift;
 
             if ("PM".equals(endShiftDaypartIndicator) && endHourShift < 12) {
@@ -339,10 +347,15 @@ public class CreateDoctor extends javax.swing.JFrame {
 
             finalHourEnd = LocalTime.of(hour24, endMinuteShift);            
             
+            // Validación lógica del horario
             if (finalHourEnd.isBefore(finalHourStart)) {
                 JOptionPane.showMessageDialog(null, "El turno del médico no puede terminar antes que inicie.", "Horario Inválido", JOptionPane.ERROR_MESSAGE);
                 return;
             }
+            
+            // Formateo a 12h (AM - PM)
+            startShiftFormatted = finalHourStart.format(dtf12h);
+            endShiftFormatted = finalHourEnd.format(dtf12h);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "No fue posible almacenar el horario de inicio y fin de turno del doctor. Por favor verifica que hayas ingresado datos válidos.", "Error Inesperado", JOptionPane.ERROR_MESSAGE);
             return;
