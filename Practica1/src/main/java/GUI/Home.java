@@ -6,7 +6,7 @@ import GUI.patients.HomePatients;
 import GUI.reports.HomeReports;
 import java.io.IOException;
 import models.Receptionist;
-import util.Reports;
+import DTO.ReportsDto;
 
 public class Home extends javax.swing.JFrame {
 
@@ -117,8 +117,6 @@ public class Home extends javax.swing.JFrame {
         addAppointmentBtn.setText("Agregar Cita");
         addAppointmentBtn.addActionListener(this::addAppointmentBtnActionPerformed);
 
-        jMenuBar1.setFont(new java.awt.Font("Ubuntu", 0, 15)); // NOI18N
-
         filesMenu.setText("Archivos");
         filesMenu.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -214,7 +212,7 @@ public class Home extends javax.swing.JFrame {
 
     private void filesMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_filesMenuMouseClicked
         // Verificación y creación de carpeta de reportes en caso no exista
-        Reports reports = new Reports();
+        ReportsDto reports = new ReportsDto();
         try {
             reports.createFolder();
 

@@ -5,7 +5,7 @@ public class HomeAppointments extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(HomeAppointments.class.getName());
 
     /**
-     * Creates new form HomeAppointments
+     * Creates new form HomeDoctors
      */
     public HomeAppointments() {
         initComponents();

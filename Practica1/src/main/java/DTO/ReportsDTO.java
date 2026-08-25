@@ -1,10 +1,10 @@
-package util;
+package DTO;
 
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 
-public class Reports {
+public class ReportsDto {
 
     // Creción de carpeta para almacenar reportes
     public void createFolder() throws IOException {

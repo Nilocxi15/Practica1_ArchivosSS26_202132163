@@ -1,21 +1,42 @@
 package GUI.doctors;
 
+import DTO.DoctorsDto;
+import GUI.Home;
+import GUI.Login;
+import GUI.patients.HomePatients;
+import GUI.reports.HomeReports;
+import java.io.IOException;
+import java.util.ArrayList;
+import models.Receptionist;
+import DTO.ReportsDto;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import models.Doctor;
+
 public class HomeDoctors extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(HomeDoctors.class.getName());
 
+    Receptionist receptionist;
+
     /**
-     * Creates new form HomeDoctors
+     * Creates new form HomeAppointments
      */
     public HomeDoctors() {
         initComponents();
     }
-    
+
     // Constructor parametrizado para inyección de dependencias
     public HomeDoctors(String id, String fullname) {
+        receptionist = new Receptionist(id, fullname, "");
         initComponents();
         this.setLocationRelativeTo(null);
         this.setTitle("Doctores");
+        this.loadTableData(null, 0);
     }
 
     /**
@@ -27,21 +48,341 @@ public class HomeDoctors extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel1 = new javax.swing.JLabel();
+        searchDoctorTextField = new javax.swing.JTextField();
+        filtersComboBox = new javax.swing.JComboBox<>();
+        searchBtn = new javax.swing.JButton();
+        createRegisterBtn = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        dataTable = new javax.swing.JTable();
+        jLabel2 = new javax.swing.JLabel();
+        stateComboBox = new javax.swing.JComboBox<>();
+        jLabel3 = new javax.swing.JLabel();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        filesMenu = new javax.swing.JMenu();
+        homeMenu = new javax.swing.JMenu();
+        patientsMenu = new javax.swing.JMenu();
+        reportsMenu = new javax.swing.JMenu();
+        logoutMenu = new javax.swing.JMenu();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMinimumSize(new java.awt.Dimension(1280, 720));
+        setResizable(false);
+
+        jLabel1.setFont(new java.awt.Font("Poppins", 1, 24)); // NOI18N
+        jLabel1.setText("Listado de Médicos");
+
+        searchDoctorTextField.addActionListener(this::searchDoctorTextFieldActionPerformed);
+
+        filtersComboBox.setFont(new java.awt.Font("Poppins", 0, 12)); // NOI18N
+        filtersComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Ninguno", "ID", "Nombre", "Apellido", "Especialidad" }));
+
+        searchBtn.setFont(new java.awt.Font("Poppins", 0, 12)); // NOI18N
+        searchBtn.setText("Buscar");
+        searchBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                searchBtnMouseClicked(evt);
+            }
+        });
+
+        createRegisterBtn.setFont(new java.awt.Font("Poppins", 0, 12)); // NOI18N
+        createRegisterBtn.setText("Agregar Médico");
+        createRegisterBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                createRegisterBtnMouseClicked(evt);
+            }
+        });
+
+        dataTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "ID", "Nombre", "Especialidad", "Celular", "Email", "Turno", "Estado"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        dataTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_LAST_COLUMN);
+        dataTable.getTableHeader().setReorderingAllowed(false);
+        dataTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                dataTableMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(dataTable);
+        if (dataTable.getColumnModel().getColumnCount() > 0) {
+            dataTable.getColumnModel().getColumn(0).setResizable(false);
+            dataTable.getColumnModel().getColumn(1).setResizable(false);
+            dataTable.getColumnModel().getColumn(2).setResizable(false);
+            dataTable.getColumnModel().getColumn(3).setResizable(false);
+            dataTable.getColumnModel().getColumn(4).setResizable(false);
+            dataTable.getColumnModel().getColumn(5).setResizable(false);
+            dataTable.getColumnModel().getColumn(6).setResizable(false);
+        }
+
+        jLabel2.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
+        jLabel2.setText("Estado:");
+
+        stateComboBox.setFont(new java.awt.Font("Poppins", 0, 12)); // NOI18N
+        stateComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Todos", "Activo", "Inactivo" }));
+
+        jLabel3.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
+        jLabel3.setText("Atributo:");
+
+        filesMenu.setText("Archivos");
+        filesMenu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                filesMenuMouseClicked(evt);
+            }
+        });
+        jMenuBar1.add(filesMenu);
+
+        homeMenu.setText("Inicio");
+        homeMenu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                homeMenuMouseClicked(evt);
+            }
+        });
+        jMenuBar1.add(homeMenu);
+
+        patientsMenu.setText("Pacientes");
+        patientsMenu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                patientsMenuMouseClicked(evt);
+            }
+        });
+        jMenuBar1.add(patientsMenu);
+
+        reportsMenu.setText("Reportes");
+        reportsMenu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                reportsMenuMouseClicked(evt);
+            }
+        });
+        jMenuBar1.add(reportsMenu);
+
+        logoutMenu.setText("Cerrar Sesión");
+        logoutMenu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                logoutMenuMouseClicked(evt);
+            }
+        });
+        jMenuBar1.add(logoutMenu);
+
+        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(50, 50, 50)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jScrollPane1)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(searchDoctorTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(filtersComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(stateComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(searchBtn)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 209, Short.MAX_VALUE)
+                                .addComponent(createRegisterBtn)))
+                        .addGap(50, 50, 50))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(8, 8, 8)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(stateComboBox, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(searchDoctorTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(filtersComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(createRegisterBtn)
+                        .addComponent(jLabel2)
+                        .addComponent(jLabel3)
+                        .addComponent(searchBtn)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 542, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(50, 50, 50))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void filesMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_filesMenuMouseClicked
+        // Verificación y creación de carpeta de reportes en caso no exista
+        ReportsDto reports = new ReportsDto();
+        try {
+            reports.createFolder();
+
+            // Apertura de carpeta
+            reports.openFolder();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_filesMenuMouseClicked
+
+    private void homeMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeMenuMouseClicked
+        // Cerrar ventana de inicio
+        this.dispose();
+
+        // Abrir ventana de página de inicio
+        Home home = new Home(receptionist.getId(), receptionist.getFullName());
+        home.setVisible(true);
+    }//GEN-LAST:event_homeMenuMouseClicked
+
+    private void patientsMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_patientsMenuMouseClicked
+        // Cerrar ventana de inicio
+        this.dispose();
+
+        // Abrir ventana de pacientes
+        HomePatients homePatients = new HomePatients(receptionist.getId(), receptionist.getFullName());
+        homePatients.setVisible(true);
+    }//GEN-LAST:event_patientsMenuMouseClicked
+
+    private void reportsMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_reportsMenuMouseClicked
+        // Cerrar ventana de inicio
+        this.dispose();
+
+        // Abrir ventana de reportes
+        HomeReports homeReports = new HomeReports(receptionist.getId(), receptionist.getFullName());
+        homeReports.setVisible(true);
+    }//GEN-LAST:event_reportsMenuMouseClicked
+
+    private void logoutMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_logoutMenuMouseClicked
+        // Cerrar ventana de inicio
+        this.dispose();
+
+        // Abrir ventana de login
+        Login login = new Login();
+        login.setVisible(true);
+    }//GEN-LAST:event_logoutMenuMouseClicked
+
+    private void searchDoctorTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchDoctorTextFieldActionPerformed
+        searchData();
+    }//GEN-LAST:event_searchDoctorTextFieldActionPerformed
+
+    private void searchBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_searchBtnMouseClicked
+        searchData();
+    }//GEN-LAST:event_searchBtnMouseClicked
+
+    private void createRegisterBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createRegisterBtnMouseClicked
+        // Abrir ventana para crear doctor
+        CreateDoctor createDoctor = new CreateDoctor(receptionist.getId(), receptionist.getFullName());
+        createDoctor.setVisible(true);
+    }//GEN-LAST:event_createRegisterBtnMouseClicked
+
+    private void dataTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dataTableMouseClicked
+        if (evt.getClickCount() == 2) {
+            int row = dataTable.rowAtPoint(evt.getPoint());
+
+            if (row >= 0) {
+                Object value = dataTable.getValueAt(row, 0);
+
+                DeleteUpdateDoctor duDoctor = new DeleteUpdateDoctor(String.valueOf(value));
+                duDoctor.setVisible(true);
+            }
+        }
+    }//GEN-LAST:event_dataTableMouseClicked
+
+    private void loadTableData(ArrayList<Doctor> dataList, int state) {
+        try {
+            // Formato para mostrar horas
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("hh:mm a", Locale.ENGLISH);
+
+            if (dataList == null) {
+                DoctorsDto util = new DoctorsDto();
+
+                switch (state) {
+                    case 0 ->
+                        dataList = util.readAll();
+                    case 1 ->
+                        dataList = util.readDoctorsActives();
+                    case 2 ->
+                        dataList = util.readDoctorsInactive();
+                    default ->
+                        throw new AssertionError();
+                }
+            }
+
+            DefaultTableModel model = (DefaultTableModel) dataTable.getModel();
+            model.setRowCount(0);
+
+            // Centrar contenido de las celdas
+            DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+            centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+            for (int i = 0; i < dataTable.getColumnCount(); i++) {
+                dataTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+            }
+
+            if (dataList == null) {
+                dataList = new ArrayList<>();
+            }
+
+            // Llenado de tabla
+            for (Doctor doctor : dataList) {
+                // Conversión de dato boolean a dato String
+                String stateStr;
+                if (doctor.isState()) {
+                    stateStr = "Activo";
+                } else {
+                    stateStr = "Inactivo";
+                }
+                
+                // Conversión de dato LocalTime a String                                
+                String startShift = doctor.getStartShift().format(dtf);
+                String endShift = doctor.getEndShift().format(dtf);
+                
+
+                model.addRow(new Object[]{
+                    doctor.getId(),
+                    doctor.getName() + " " + doctor.getLastname(),
+                    doctor.getSpeciality(),
+                    doctor.getCellphone(),
+                    doctor.getEmail(),
+                    startShift + " - " + endShift,
+                    stateStr
+                });
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "Error al cargar los datos: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void searchData() {
+        DoctorsDto util = new DoctorsDto();
+        ArrayList<Doctor> doctors = util.searchData(searchDoctorTextField.getText(), filtersComboBox.getSelectedIndex(), stateComboBox.getSelectedIndex());
+        loadTableData(doctors, 0);
+        
+        if (filtersComboBox.getSelectedIndex() == 0) {
+            searchDoctorTextField.setText("");
+        }
+    }
 
     /**
      * @param args the command line arguments
@@ -69,5 +410,21 @@ public class HomeDoctors extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton createRegisterBtn;
+    private javax.swing.JTable dataTable;
+    private javax.swing.JMenu filesMenu;
+    private javax.swing.JComboBox<String> filtersComboBox;
+    private javax.swing.JMenu homeMenu;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JMenu logoutMenu;
+    private javax.swing.JMenu patientsMenu;
+    private javax.swing.JMenu reportsMenu;
+    private javax.swing.JButton searchBtn;
+    private javax.swing.JTextField searchDoctorTextField;
+    private javax.swing.JComboBox<String> stateComboBox;
     // End of variables declaration//GEN-END:variables
 }

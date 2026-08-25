@@ -1,7 +1,12 @@
 D:\Documentos\DocumentosUSAC\ArchivosSS26\Practica1_ArchivosSS26_202132163\Practica1\src\main\java\com\mycompany\practica1\DataRolesGenerator.java
 D:\Documentos\DocumentosUSAC\ArchivosSS26\Practica1_ArchivosSS26_202132163\Practica1\src\main\java\com\mycompany\practica1\Practica1.java
+D:\Documentos\DocumentosUSAC\ArchivosSS26\Practica1_ArchivosSS26_202132163\Practica1\src\main\java\DTO\DoctorsDto.java
+D:\Documentos\DocumentosUSAC\ArchivosSS26\Practica1_ArchivosSS26_202132163\Practica1\src\main\java\DTO\PatientsDto.java
+D:\Documentos\DocumentosUSAC\ArchivosSS26\Practica1_ArchivosSS26_202132163\Practica1\src\main\java\DTO\ReportsDto.java
 D:\Documentos\DocumentosUSAC\ArchivosSS26\Practica1_ArchivosSS26_202132163\Practica1\src\main\java\GUI\appointments\CreateAppointment.java
 D:\Documentos\DocumentosUSAC\ArchivosSS26\Practica1_ArchivosSS26_202132163\Practica1\src\main\java\GUI\appointments\HomeAppointments.java
+D:\Documentos\DocumentosUSAC\ArchivosSS26\Practica1_ArchivosSS26_202132163\Practica1\src\main\java\GUI\doctors\CreateDoctor.java
+D:\Documentos\DocumentosUSAC\ArchivosSS26\Practica1_ArchivosSS26_202132163\Practica1\src\main\java\GUI\doctors\DeleteUpdateDoctor.java
 D:\Documentos\DocumentosUSAC\ArchivosSS26\Practica1_ArchivosSS26_202132163\Practica1\src\main\java\GUI\doctors\HomeDoctors.java
 D:\Documentos\DocumentosUSAC\ArchivosSS26\Practica1_ArchivosSS26_202132163\Practica1\src\main\java\GUI\Home.java
 D:\Documentos\DocumentosUSAC\ArchivosSS26\Practica1_ArchivosSS26_202132163\Practica1\src\main\java\GUI\Login.java
@@ -13,5 +18,3 @@ D:\Documentos\DocumentosUSAC\ArchivosSS26\Practica1_ArchivosSS26_202132163\Pract
 D:\Documentos\DocumentosUSAC\ArchivosSS26\Practica1_ArchivosSS26_202132163\Practica1\src\main\java\models\Doctor.java
 D:\Documentos\DocumentosUSAC\ArchivosSS26\Practica1_ArchivosSS26_202132163\Practica1\src\main\java\models\Patient.java
 D:\Documentos\DocumentosUSAC\ArchivosSS26\Practica1_ArchivosSS26_202132163\Practica1\src\main\java\models\Receptionist.java
-D:\Documentos\DocumentosUSAC\ArchivosSS26\Practica1_ArchivosSS26_202132163\Practica1\src\main\java\util\Patients.java
-D:\Documentos\DocumentosUSAC\ArchivosSS26\Practica1_ArchivosSS26_202132163\Practica1\src\main\java\util\Reports.java

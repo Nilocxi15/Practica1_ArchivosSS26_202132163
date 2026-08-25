@@ -5,7 +5,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import javax.swing.JOptionPane;
 import models.Patient;
-import util.Patients;
+import DTO.PatientsDto;
 
 public class DeleteUpdatePatient extends javax.swing.JFrame {
 
@@ -25,7 +25,6 @@ public class DeleteUpdatePatient extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         this.setTitle("Actualizar - Eliminar Registro");
         this.id = id;
-        idDeleteInput.setText(id);
         this.setDataToUpdate();
     }
 
@@ -240,7 +239,7 @@ public class DeleteUpdatePatient extends javax.swing.JFrame {
                 "¡Advertencia!", JOptionPane.YES_NO_OPTION); // NO = 1, SI = 0
 
         if (option == 0) {
-            Patients util = new Patients();
+            PatientsDto util = new PatientsDto();
             boolean success = util.deleteRegister(id);
             if (success) {
                 JOptionPane.showMessageDialog(null, "Se eliminó exitosamente el registro del paciente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
@@ -248,7 +247,7 @@ public class DeleteUpdatePatient extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "No fue posible eliminar el registro del paciente.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
-        
+
         this.dispose();
     }//GEN-LAST:event_deleteBtnActionPerformed
 
@@ -343,7 +342,7 @@ public class DeleteUpdatePatient extends javax.swing.JFrame {
         }
 
         Patient patient = new Patient(id, names, lastnames, birthDateLD, gender, cellphone, email, bloodType);
-        Patients util = new Patients();
+        PatientsDto util = new PatientsDto();
         boolean success = util.updatePatient(patient);
 
         if (!success) {
@@ -357,7 +356,7 @@ public class DeleteUpdatePatient extends javax.swing.JFrame {
 
     private void setDataToUpdate() {
         // Obtencion de datos del id correspondiente
-        Patients util = new Patients();
+        PatientsDto util = new PatientsDto();
         Patient p = util.searchRegister(id);
 
         if (p == null) {
@@ -406,6 +405,9 @@ public class DeleteUpdatePatient extends javax.swing.JFrame {
         cellPhoneField.setText(p.getCellphone());
         emailField.setText(p.getEmail());
         bloodTypeComboBox.setSelectedIndex(bloodType);
+
+        // ID del campo en caso se desee eliminar el registro
+        idDeleteInput.setText(id);
     }
 
     /**
