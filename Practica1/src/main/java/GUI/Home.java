@@ -7,6 +7,7 @@ import GUI.reports.HomeReports;
 import java.io.IOException;
 import models.Receptionist;
 import DTO.ReportsDto;
+import GUI.appointments.HomeAppointments;
 
 public class Home extends javax.swing.JFrame {
 
@@ -50,6 +51,7 @@ public class Home extends javax.swing.JFrame {
         addAppointmentBtn = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         filesMenu = new javax.swing.JMenu();
+        appointmentsMenu = new javax.swing.JMenu();
         patientsMenu = new javax.swing.JMenu();
         doctorsMenu = new javax.swing.JMenu();
         reportsMenu = new javax.swing.JMenu();
@@ -124,6 +126,14 @@ public class Home extends javax.swing.JFrame {
             }
         });
         jMenuBar1.add(filesMenu);
+
+        appointmentsMenu.setText("Citas");
+        appointmentsMenu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                appointmentsMenuMouseClicked(evt);
+            }
+        });
+        jMenuBar1.add(appointmentsMenu);
 
         patientsMenu.setText("Pacientes");
         patientsMenu.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -256,6 +266,15 @@ public class Home extends javax.swing.JFrame {
         createAppointment.setVisible(true);
     }//GEN-LAST:event_addAppointmentBtnActionPerformed
 
+    private void appointmentsMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_appointmentsMenuMouseClicked
+        // Cerrar ventana de inicio
+        this.dispose();
+        
+        // Abrir ventana de citas
+        HomeAppointments homeAppointments = new HomeAppointments(receptionist.getId(), receptionist.getFullName());
+        homeAppointments.setVisible(true);
+    }//GEN-LAST:event_appointmentsMenuMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -283,6 +302,7 @@ public class Home extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addAppointmentBtn;
+    private javax.swing.JMenu appointmentsMenu;
     private javax.swing.JTable dataTable;
     private javax.swing.JMenu doctorsMenu;
     private javax.swing.JMenu filesMenu;

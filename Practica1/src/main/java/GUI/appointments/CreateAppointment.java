@@ -32,12 +32,12 @@ public class CreateAppointment extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        patientesDataTable = new javax.swing.JTable();
         searchPatientField = new javax.swing.JTextField();
         searchPatientBtn = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        doctorsDataTable = new javax.swing.JTable();
         idPatientField = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
@@ -68,8 +68,8 @@ public class CreateAppointment extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Ubuntu", 1, 18)); // NOI18N
         jLabel2.setText("Pacientes");
 
-        jTable1.setFont(new java.awt.Font("Ubuntu", 0, 15)); // NOI18N
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        patientesDataTable.setFont(new java.awt.Font("Ubuntu", 0, 15)); // NOI18N
+        patientesDataTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -85,12 +85,12 @@ public class CreateAppointment extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jTable1.getTableHeader().setReorderingAllowed(false);
-        jScrollPane1.setViewportView(jTable1);
-        if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setResizable(false);
-            jTable1.getColumnModel().getColumn(1).setResizable(false);
-            jTable1.getColumnModel().getColumn(2).setResizable(false);
+        patientesDataTable.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(patientesDataTable);
+        if (patientesDataTable.getColumnModel().getColumnCount() > 0) {
+            patientesDataTable.getColumnModel().getColumn(0).setResizable(false);
+            patientesDataTable.getColumnModel().getColumn(1).setResizable(false);
+            patientesDataTable.getColumnModel().getColumn(2).setResizable(false);
         }
 
         searchPatientBtn.setFont(new java.awt.Font("Ubuntu", 0, 15)); // NOI18N
@@ -99,7 +99,7 @@ public class CreateAppointment extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Ubuntu", 1, 18)); // NOI18N
         jLabel3.setText("Médicos");
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        doctorsDataTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -118,13 +118,13 @@ public class CreateAppointment extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jTable2.getTableHeader().setReorderingAllowed(false);
-        jScrollPane2.setViewportView(jTable2);
-        if (jTable2.getColumnModel().getColumnCount() > 0) {
-            jTable2.getColumnModel().getColumn(0).setResizable(false);
-            jTable2.getColumnModel().getColumn(1).setResizable(false);
-            jTable2.getColumnModel().getColumn(2).setResizable(false);
-            jTable2.getColumnModel().getColumn(3).setResizable(false);
+        doctorsDataTable.getTableHeader().setReorderingAllowed(false);
+        jScrollPane2.setViewportView(doctorsDataTable);
+        if (doctorsDataTable.getColumnModel().getColumnCount() > 0) {
+            doctorsDataTable.getColumnModel().getColumn(0).setResizable(false);
+            doctorsDataTable.getColumnModel().getColumn(1).setResizable(false);
+            doctorsDataTable.getColumnModel().getColumn(2).setResizable(false);
+            doctorsDataTable.getColumnModel().getColumn(3).setResizable(false);
         }
 
         idPatientField.setEditable(false);
@@ -301,6 +301,7 @@ public class CreateAppointment extends javax.swing.JFrame {
     private com.toedter.calendar.JDateChooser appointmentDateField;
     private javax.swing.JTextArea consultationReasonTextArea;
     private javax.swing.JButton createBtn;
+    private javax.swing.JTable doctorsDataTable;
     private javax.swing.JButton doctorsSearchBtn;
     private javax.swing.JTextField doctorsSearchField;
     private com.toedter.components.JSpinField hourField;
@@ -320,10 +321,9 @@ public class CreateAppointment extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTable jTable2;
     private com.toedter.components.JSpinField minuteField;
     private javax.swing.JTextArea observationTextArea;
+    private javax.swing.JTable patientesDataTable;
     private javax.swing.JComboBox<String> scheduleComboBox;
     private javax.swing.JButton searchPatientBtn;
     private javax.swing.JTextField searchPatientField;

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import models.Receptionist;
 import DTO.ReportsDto;
+import GUI.appointments.HomeAppointments;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import javax.swing.JOptionPane;
@@ -61,6 +62,7 @@ public class HomeDoctors extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         filesMenu = new javax.swing.JMenu();
         homeMenu = new javax.swing.JMenu();
+        appointmentsMenu = new javax.swing.JMenu();
         patientsMenu = new javax.swing.JMenu();
         reportsMenu = new javax.swing.JMenu();
         logoutMenu = new javax.swing.JMenu();
@@ -151,6 +153,14 @@ public class HomeDoctors extends javax.swing.JFrame {
             }
         });
         jMenuBar1.add(homeMenu);
+
+        appointmentsMenu.setText("Citas");
+        appointmentsMenu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                appointmentsMenuMouseClicked(evt);
+            }
+        });
+        jMenuBar1.add(appointmentsMenu);
 
         patientsMenu.setText("Pacientes");
         patientsMenu.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -306,6 +316,15 @@ public class HomeDoctors extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_dataTableMouseClicked
 
+    private void appointmentsMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_appointmentsMenuMouseClicked
+        // Cerrar ventana de inicio
+        this.dispose();
+
+        // Abrir ventana de citas
+        HomeAppointments homeAppointments = new HomeAppointments(receptionist.getId(), receptionist.getFullName());
+        homeAppointments.setVisible(true);
+    }//GEN-LAST:event_appointmentsMenuMouseClicked
+
     private void loadTableData(ArrayList<Doctor> dataList, int state) {
         try {
             // Formato para mostrar horas
@@ -350,11 +369,10 @@ public class HomeDoctors extends javax.swing.JFrame {
                 } else {
                     stateStr = "Inactivo";
                 }
-                
+
                 // Conversión de dato LocalTime a String                                
                 String startShift = doctor.getStartShift().format(dtf);
                 String endShift = doctor.getEndShift().format(dtf);
-                
 
                 model.addRow(new Object[]{
                     doctor.getId(),
@@ -378,7 +396,7 @@ public class HomeDoctors extends javax.swing.JFrame {
         DoctorsDto util = new DoctorsDto();
         ArrayList<Doctor> doctors = util.searchData(searchDoctorTextField.getText(), filtersComboBox.getSelectedIndex(), stateComboBox.getSelectedIndex());
         loadTableData(doctors, 0);
-        
+
         if (filtersComboBox.getSelectedIndex() == 0) {
             searchDoctorTextField.setText("");
         }
@@ -410,6 +428,7 @@ public class HomeDoctors extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenu appointmentsMenu;
     private javax.swing.JButton createRegisterBtn;
     private javax.swing.JTable dataTable;
     private javax.swing.JMenu filesMenu;

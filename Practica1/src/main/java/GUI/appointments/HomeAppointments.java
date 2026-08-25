@@ -9,7 +9,7 @@ public class HomeAppointments extends javax.swing.JFrame {
      */
     public HomeAppointments() {
         initComponents();
-    }
+    }   
     
     // Constructor parametrizado para inyección de dependencias
     public HomeAppointments(String id, String fullname) {
@@ -27,17 +27,149 @@ public class HomeAppointments extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel1 = new javax.swing.JLabel();
+        searchTextField = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        attributeComboBox = new javax.swing.JComboBox<>();
+        jLabel3 = new javax.swing.JLabel();
+        stateComboBox = new javax.swing.JComboBox<>();
+        searchBtn = new javax.swing.JButton();
+        createAppointmentBtn = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        dataTable = new javax.swing.JTable();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        filesMenu = new javax.swing.JMenu();
+        homeMenu = new javax.swing.JMenu();
+        patientsMenu = new javax.swing.JMenu();
+        doctorsMenu = new javax.swing.JMenu();
+        reportsMenu = new javax.swing.JMenu();
+        logoutMenu = new javax.swing.JMenu();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMaximumSize(new java.awt.Dimension(1280, 720));
+        setMinimumSize(new java.awt.Dimension(1280, 720));
+        setPreferredSize(new java.awt.Dimension(1280, 720));
+        setResizable(false);
+
+        jLabel1.setFont(new java.awt.Font("Poppins", 1, 24)); // NOI18N
+        jLabel1.setText("Gestión de Citas");
+
+        jLabel2.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
+        jLabel2.setText("Atributo:");
+
+        attributeComboBox.setFont(new java.awt.Font("Poppins", 0, 12)); // NOI18N
+        attributeComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ID", "Paciente", "Médico", "Fecha" }));
+
+        jLabel3.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
+        jLabel3.setText("Estado:");
+
+        stateComboBox.setFont(new java.awt.Font("Poppins", 0, 12)); // NOI18N
+        stateComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Todo", "Programada", "Atendida", "Cancelada" }));
+
+        searchBtn.setFont(new java.awt.Font("Poppins", 0, 12)); // NOI18N
+        searchBtn.setText("Buscar");
+
+        createAppointmentBtn.setFont(new java.awt.Font("Poppins", 0, 12)); // NOI18N
+        createAppointmentBtn.setText("Agregar Cita");
+
+        dataTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "ID", "Paciente", "Médico", "Fecha Programada", "Hora Inicio", "Motivo", "Estado", "Observaciones"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        dataTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_LAST_COLUMN);
+        dataTable.getTableHeader().setReorderingAllowed(false);
+        jScrollPane1.setViewportView(dataTable);
+        if (dataTable.getColumnModel().getColumnCount() > 0) {
+            dataTable.getColumnModel().getColumn(0).setResizable(false);
+            dataTable.getColumnModel().getColumn(1).setResizable(false);
+            dataTable.getColumnModel().getColumn(2).setResizable(false);
+            dataTable.getColumnModel().getColumn(3).setResizable(false);
+            dataTable.getColumnModel().getColumn(4).setResizable(false);
+            dataTable.getColumnModel().getColumn(5).setResizable(false);
+            dataTable.getColumnModel().getColumn(6).setResizable(false);
+            dataTable.getColumnModel().getColumn(7).setResizable(false);
+        }
+
+        filesMenu.setText("Archivos");
+        jMenuBar1.add(filesMenu);
+
+        homeMenu.setText("Inicio");
+        jMenuBar1.add(homeMenu);
+
+        patientsMenu.setText("Pacientes");
+        jMenuBar1.add(patientsMenu);
+
+        doctorsMenu.setText("Médicos");
+        jMenuBar1.add(doctorsMenu);
+
+        reportsMenu.setText("Reportes");
+        jMenuBar1.add(reportsMenu);
+
+        logoutMenu.setText("Cerrar Sesión");
+        jMenuBar1.add(logoutMenu);
+
+        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(50, 50, 50)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(attributeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(stateComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(searchBtn)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 225, Short.MAX_VALUE)
+                                .addComponent(createAppointmentBtn)))
+                        .addGap(50, 50, 50))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(8, 8, 8)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel2)
+                        .addComponent(attributeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel3)
+                        .addComponent(stateComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(searchBtn)
+                        .addComponent(createAppointmentBtn))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(18, 18, 18)
+                        .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 550, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(50, 50, 50))
         );
 
         pack();
@@ -69,5 +201,22 @@ public class HomeAppointments extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> attributeComboBox;
+    private javax.swing.JButton createAppointmentBtn;
+    private javax.swing.JTable dataTable;
+    private javax.swing.JMenu doctorsMenu;
+    private javax.swing.JMenu filesMenu;
+    private javax.swing.JMenu homeMenu;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JMenu logoutMenu;
+    private javax.swing.JMenu patientsMenu;
+    private javax.swing.JMenu reportsMenu;
+    private javax.swing.JButton searchBtn;
+    private javax.swing.JTextField searchTextField;
+    private javax.swing.JComboBox<String> stateComboBox;
     // End of variables declaration//GEN-END:variables
 }
