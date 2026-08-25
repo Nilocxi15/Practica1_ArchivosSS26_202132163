@@ -1,6 +1,15 @@
 package GUI;
 
+import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
+import models.Receptionist;
+
 public class Login extends javax.swing.JFrame {
+
+    // Variables globales
+    private ArrayList<Receptionist> receptionists = new ArrayList<>();
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Login.class.getName());
 
@@ -11,6 +20,7 @@ public class Login extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         this.setTitle("Inicio de Sesión");
+        retrieveData();
     }
 
     /**
@@ -25,8 +35,8 @@ public class Login extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jPasswordField1 = new javax.swing.JPasswordField();
-        jButton1 = new javax.swing.JButton();
+        passwordField = new javax.swing.JPasswordField();
+        loginBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Login");
@@ -44,30 +54,32 @@ public class Login extends javax.swing.JFrame {
         jLabel3.setForeground(new java.awt.Color(192, 192, 192));
         jLabel3.setText("Por favor ingrese su contraseña.");
 
-        jPasswordField1.setFont(new java.awt.Font("Ubuntu", 0, 15)); // NOI18N
+        passwordField.setFont(new java.awt.Font("Ubuntu", 0, 15)); // NOI18N
+        passwordField.addActionListener(this::passwordFieldActionPerformed);
 
-        jButton1.setFont(new java.awt.Font("Ubuntu", 0, 15)); // NOI18N
-        jButton1.setText("Iniciar Sesión");
+        loginBtn.setFont(new java.awt.Font("Ubuntu", 0, 15)); // NOI18N
+        loginBtn.setText("Iniciar Sesión");
+        loginBtn.addActionListener(this::loginBtnActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(447, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel3)
-                    .addComponent(jPasswordField1))
-                .addContainerGap(447, Short.MAX_VALUE))
+                    .addComponent(passwordField))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(579, 579, 579)
+                .addComponent(loginBtn)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(551, 551, 551)
                 .addComponent(jLabel1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(552, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -79,14 +91,97 @@ public class Login extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel3)
                 .addGap(18, 18, 18)
-                .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton1)
+                .addComponent(loginBtn)
                 .addContainerGap(346, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginBtnActionPerformed
+        this.checkPassword();
+    }//GEN-LAST:event_loginBtnActionPerformed
+
+    private void passwordFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordFieldActionPerformed
+        this.checkPassword();
+    }//GEN-LAST:event_passwordFieldActionPerformed
+
+    private void retrieveData() {
+        try {
+            final int idSize = 36;
+            final int fullNameSize = 16;
+            final int passwordSize = 2;
+
+            receptionists.clear();
+            RandomAccessFile raf = new RandomAccessFile("data/roles.dat", "r");
+
+            while (raf.getFilePointer() < raf.length()) {
+                if (raf.getFilePointer() + idSize + fullNameSize + passwordSize > raf.length()) {
+                    break;
+                }
+
+                byte[] idData = new byte[idSize];
+                byte[] fullNameData = new byte[fullNameSize];
+                byte[] passwordData = new byte[passwordSize];
+
+                // Lectura de campos
+                raf.readFully(idData);
+                raf.readFully(fullNameData);
+                raf.readFully(passwordData);
+
+                // Manejo de fin de línea (\n o \r\n)
+                if (raf.getFilePointer() < raf.length()) {
+                    byte b = raf.readByte();
+                    if (b == '\r' && raf.getFilePointer() < raf.length()) {
+                        long mark = raf.getFilePointer();
+                        if (raf.readByte() != '\n') {
+                            raf.seek(mark);
+                        }
+                    }
+                }
+
+                // Parse de datos binarios a string
+                String id = new String(idData, StandardCharsets.ISO_8859_1).trim();
+                String fullname = new String(fullNameData, StandardCharsets.ISO_8859_1).trim();
+                String password = new String(passwordData, StandardCharsets.ISO_8859_1).trim();
+
+                if (!id.isEmpty()) {
+                    receptionists.add(new Receptionist(id, fullname, password));
+                }
+            }
+            raf.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void checkPassword() {
+        try {
+            String password = new String(passwordField.getPassword());
+
+            if (password.isBlank()) {
+                return;
+            }
+
+            for (Receptionist receptionist : receptionists) {
+                if (receptionist != null && receptionist.getPassword().equals(password)) {
+                    DTO.ReportsDto.recordLog(receptionist.getFullName() + " (" + receptionist.getId() + ")",
+                            "Autenticación / Sistema", "Login / Logout", "Inicio de sesión de usuario en el sistema");
+                    this.dispose();
+                    Home home = new Home(receptionist.getId(), receptionist.getFullName());
+                    home.setVisible(true);
+                    return;
+                }
+            }
+
+            JOptionPane.showMessageDialog(null, "Por favor vuelva a intentarlo.", "Contraseña Incorrecta", JOptionPane.WARNING_MESSAGE);
+        } catch (Exception e) {
+            e.printStackTrace();
+            e.getMessage();
+        }
+    }
 
     /**
      * @param args the command line arguments
@@ -114,10 +209,10 @@ public class Login extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JPasswordField jPasswordField1;
+    private javax.swing.JButton loginBtn;
+    private javax.swing.JPasswordField passwordField;
     // End of variables declaration//GEN-END:variables
 }

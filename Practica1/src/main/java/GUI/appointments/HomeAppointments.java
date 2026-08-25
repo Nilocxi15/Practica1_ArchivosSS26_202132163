@@ -1,22 +1,48 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package GUI.appointments;
 
-/**
- *
- * @author javier-ixcolin
- */
+import DTO.AppointmentsDto;
+import DTO.DoctorsDto;
+import DTO.PatientsDto;
+import DTO.ReportsDto;
+import GUI.Home;
+import GUI.Login;
+import GUI.doctors.HomeDoctors;
+import GUI.patients.HomePatients;
+import GUI.reports.HomeReports;
+import java.io.IOException;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Locale;
+import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import models.Appointment;
+import models.Doctor;
+import models.Patient;
+import models.Receptionist;
+
 public class HomeAppointments extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(HomeAppointments.class.getName());
 
+    Receptionist receptionist;
+
     /**
-     * Creates new form HomeAppointments
+     * Creates new form HomeDoctors
      */
     public HomeAppointments() {
         initComponents();
+        loadTableData(null, 0);
+    }
+
+    // Constructor parametrizado para inyección de dependencias
+    public HomeAppointments(String id, String fullname) {
+        receptionist = new Receptionist(id, fullname, "");
+        initComponents();
+        this.setLocationRelativeTo(null);
+        this.setTitle("Citas");
+        loadTableData(null, 0);
     }
 
     /**
@@ -28,21 +54,368 @@ public class HomeAppointments extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel1 = new javax.swing.JLabel();
+        searchTextField = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        attributeComboBox = new javax.swing.JComboBox<>();
+        jLabel3 = new javax.swing.JLabel();
+        stateComboBox = new javax.swing.JComboBox<>();
+        searchBtn = new javax.swing.JButton();
+        createAppointmentBtn = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        dataTable = new javax.swing.JTable();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        filesMenu = new javax.swing.JMenu();
+        homeMenu = new javax.swing.JMenu();
+        patientsMenu = new javax.swing.JMenu();
+        doctorsMenu = new javax.swing.JMenu();
+        reportsMenu = new javax.swing.JMenu();
+        logoutMenu = new javax.swing.JMenu();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMaximumSize(new java.awt.Dimension(1280, 720));
+        setMinimumSize(new java.awt.Dimension(1280, 720));
+        setResizable(false);
+
+        jLabel1.setFont(new java.awt.Font("Poppins", 1, 24)); // NOI18N
+        jLabel1.setText("Gestión de Citas");
+
+        searchTextField.addActionListener(this::searchTextFieldActionPerformed);
+
+        jLabel2.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
+        jLabel2.setText("Atributo:");
+
+        attributeComboBox.setFont(new java.awt.Font("Poppins", 0, 12)); // NOI18N
+        attributeComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Todo", "ID", "Paciente", "Médico", "Fecha" }));
+        attributeComboBox.addActionListener(this::attributeComboBoxActionPerformed);
+
+        jLabel3.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
+        jLabel3.setText("Estado:");
+
+        stateComboBox.setFont(new java.awt.Font("Poppins", 0, 12)); // NOI18N
+        stateComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Todo", "Programada", "Atendida", "Cancelada" }));
+        stateComboBox.addActionListener(this::stateComboBoxActionPerformed);
+
+        searchBtn.setFont(new java.awt.Font("Poppins", 0, 12)); // NOI18N
+        searchBtn.setText("Buscar");
+        searchBtn.addActionListener(this::searchBtnActionPerformed);
+
+        createAppointmentBtn.setFont(new java.awt.Font("Poppins", 0, 12)); // NOI18N
+        createAppointmentBtn.setText("Agregar Cita");
+        createAppointmentBtn.addActionListener(this::createAppointmentBtnActionPerformed);
+
+        dataTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "ID", "Paciente", "Médico", "Fecha Programada", "Hora Inicio", "Motivo", "Estado", "Observaciones"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        dataTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_LAST_COLUMN);
+        dataTable.getTableHeader().setReorderingAllowed(false);
+        dataTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                dataTableMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(dataTable);
+        if (dataTable.getColumnModel().getColumnCount() > 0) {
+            dataTable.getColumnModel().getColumn(0).setResizable(false);
+            dataTable.getColumnModel().getColumn(1).setResizable(false);
+            dataTable.getColumnModel().getColumn(2).setResizable(false);
+            dataTable.getColumnModel().getColumn(3).setResizable(false);
+            dataTable.getColumnModel().getColumn(4).setResizable(false);
+            dataTable.getColumnModel().getColumn(5).setResizable(false);
+            dataTable.getColumnModel().getColumn(6).setResizable(false);
+            dataTable.getColumnModel().getColumn(7).setResizable(false);
+        }
+
+        filesMenu.setText("Archivos");
+        filesMenu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                filesMenuMouseClicked(evt);
+            }
+        });
+        jMenuBar1.add(filesMenu);
+
+        homeMenu.setText("Inicio");
+        homeMenu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                homeMenuMouseClicked(evt);
+            }
+        });
+        jMenuBar1.add(homeMenu);
+
+        patientsMenu.setText("Pacientes");
+        patientsMenu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                patientsMenuMouseClicked(evt);
+            }
+        });
+        jMenuBar1.add(patientsMenu);
+
+        doctorsMenu.setText("Médicos");
+        doctorsMenu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                doctorsMenuMouseClicked(evt);
+            }
+        });
+        jMenuBar1.add(doctorsMenu);
+
+        reportsMenu.setText("Reportes");
+        reportsMenu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                reportsMenuMouseClicked(evt);
+            }
+        });
+        jMenuBar1.add(reportsMenu);
+
+        logoutMenu.setText("Cerrar Sesión");
+        logoutMenu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                logoutMenuMouseClicked(evt);
+            }
+        });
+        jMenuBar1.add(logoutMenu);
+
+        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(50, 50, 50)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(attributeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(searchBtn)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(stateComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 225, Short.MAX_VALUE)
+                                .addComponent(createAppointmentBtn)))
+                        .addGap(50, 50, 50))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(8, 8, 8)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel2)
+                        .addComponent(attributeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel3)
+                        .addComponent(stateComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(searchBtn)
+                        .addComponent(createAppointmentBtn))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(18, 18, 18)
+                        .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 550, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(50, 50, 50))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void filesMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_filesMenuMouseClicked
+        ReportsDto reports = new ReportsDto();
+        try {
+            reports.createFolder();
+
+            // Apertura de carpeta
+            reports.openFolder();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_filesMenuMouseClicked
+
+    private void homeMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeMenuMouseClicked
+        // Cerrar ventana de inicio
+        this.dispose();
+        
+        // Abrir ventana de inicio de aplicación
+        Home home = new Home(receptionist.getId(), receptionist.getFullName());
+        home.setVisible(true);
+    }//GEN-LAST:event_homeMenuMouseClicked
+
+    private void patientsMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_patientsMenuMouseClicked
+        // Cerrar ventana de inicio
+        this.dispose();
+
+        // Abrir ventana de pacientes
+        HomePatients homePatients = new HomePatients(receptionist.getId(), receptionist.getFullName());
+        homePatients.setVisible(true);
+    }//GEN-LAST:event_patientsMenuMouseClicked
+
+    private void doctorsMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_doctorsMenuMouseClicked
+        // Cerrar ventana de inicio
+        this.dispose();
+
+        // Abrir ventana de doctores
+        HomeDoctors homeDoctors = new HomeDoctors(receptionist.getId(), receptionist.getFullName());
+        homeDoctors.setVisible(true);
+    }//GEN-LAST:event_doctorsMenuMouseClicked
+
+    private void reportsMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_reportsMenuMouseClicked
+        // Cerrar ventana de inicio
+        this.dispose();
+
+        // Abrir ventana de reportes
+        HomeReports homeReports = new HomeReports(receptionist.getId(), receptionist.getFullName());
+        homeReports.setVisible(true);
+    }//GEN-LAST:event_reportsMenuMouseClicked
+
+    private void logoutMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_logoutMenuMouseClicked
+        // Cerrar ventana de inicio
+        this.dispose();
+
+        // Abrir ventana de login
+        Login login = new Login();
+        login.setVisible(true);
+    }//GEN-LAST:event_logoutMenuMouseClicked
+
+    private void searchBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchBtnActionPerformed
+        searchData();
+    }//GEN-LAST:event_searchBtnActionPerformed
+
+    private void searchTextFieldActionPerformed(java.awt.event.ActionEvent evt) {
+        searchData();
+    }
+
+    private void attributeComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
+        searchData();
+    }
+
+    private void stateComboBoxActionPerformed(java.awt.event.ActionEvent evt) {
+        searchData();
+    }
+
+    private void dataTableMouseClicked(java.awt.event.MouseEvent evt) {
+        if (evt.getClickCount() == 2) {
+            int row = dataTable.rowAtPoint(evt.getPoint());
+            if (row >= 0) {
+                Object value = dataTable.getValueAt(row, 0);
+                if (value != null) {
+                    DeleteUpdateAppointment duAppointment = new DeleteUpdateAppointment(String.valueOf(value));
+                    duAppointment.setVisible(true);
+                }
+            }
+        }
+    }
+
+    private void createAppointmentBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createAppointmentBtnActionPerformed
+        // Abrir ventana de creación de citas
+        CreateAppointment createAppointment = new CreateAppointment(receptionist.getId(), receptionist.getFullName());
+        createAppointment.setVisible(true);
+    }//GEN-LAST:event_createAppointmentBtnActionPerformed
+
+    private void loadTableData(ArrayList<Appointment> dataList, int state) {
+        try {
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.ENGLISH);
+
+            if (dataList == null) {
+                AppointmentsDto appointmentsDto = new AppointmentsDto();
+                switch (state) {
+                    case 0 -> dataList = appointmentsDto.readAll();
+                    case 1 -> dataList = appointmentsDto.readAppointmentsByState(AppointmentsDto.STATE_PROGRAMADA);
+                    case 2 -> dataList = appointmentsDto.readAppointmentsByState(AppointmentsDto.STATE_ATENDIDA);
+                    case 3 -> dataList = appointmentsDto.readAppointmentsByState(AppointmentsDto.STATE_CANCELADA);
+                    default -> dataList = appointmentsDto.readAll();
+                }
+            }
+
+            DefaultTableModel model = (DefaultTableModel) dataTable.getModel();
+            model.setRowCount(0);
+
+            // Centrar contenido de las celdas
+            DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+            centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+            for (int i = 0; i < dataTable.getColumnCount(); i++) {
+                dataTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+            }
+
+            if (dataList == null) {
+                dataList = new ArrayList<>();
+            }
+
+            PatientsDto patientsDto = new PatientsDto();
+            DoctorsDto doctorsDto = new DoctorsDto();
+
+            for (Appointment appointment : dataList) {
+                // Obtener nombre del paciente
+                Patient patient = patientsDto.searchRegister(appointment.getIdPatient());
+                String patientName = (patient != null)
+                        ? patient.getName() + " " + patient.getLastname()
+                        : appointment.getIdPatient();
+
+                // Obtener nombre del médico
+                Doctor doctor = doctorsDto.searchRegister(appointment.getIdDoctor());
+                String doctorName = (doctor != null)
+                        ? doctor.getName() + " " + doctor.getLastname()
+                        : appointment.getIdDoctor();
+
+                // Formateo de fecha y hora
+                String formattedDate = (appointment.getDate() != null)
+                        ? appointment.getDate().format(dateFormatter)
+                        : "";
+                String formattedHour = (appointment.getHour() != null)
+                        ? appointment.getHour().format(timeFormatter)
+                        : "";
+
+                model.addRow(new Object[]{
+                    appointment.getIdAppointment(),
+                    patientName,
+                    doctorName,
+                    formattedDate,
+                    formattedHour,
+                    appointment.getConsultationReason(),
+                    appointment.getState(),
+                    appointment.getObservations()
+                });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                    "Error al cargar las citas: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void searchData() {
+        AppointmentsDto appointmentsDto = new AppointmentsDto();
+        String searchText = searchTextField.getText();
+        int attribute = attributeComboBox.getSelectedIndex();
+        int state = stateComboBox.getSelectedIndex();
+
+        ArrayList<Appointment> appointments = appointmentsDto.searchData(searchText, attribute, state);
+        loadTableData(appointments, state);
+    }
 
     /**
      * @param args the command line arguments
@@ -70,5 +443,22 @@ public class HomeAppointments extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> attributeComboBox;
+    private javax.swing.JButton createAppointmentBtn;
+    private javax.swing.JTable dataTable;
+    private javax.swing.JMenu doctorsMenu;
+    private javax.swing.JMenu filesMenu;
+    private javax.swing.JMenu homeMenu;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JMenu logoutMenu;
+    private javax.swing.JMenu patientsMenu;
+    private javax.swing.JMenu reportsMenu;
+    private javax.swing.JButton searchBtn;
+    private javax.swing.JTextField searchTextField;
+    private javax.swing.JComboBox<String> stateComboBox;
     // End of variables declaration//GEN-END:variables
 }

@@ -1,13 +1,32 @@
 package GUI;
 
+import GUI.appointments.CreateAppointment;
+import GUI.doctors.HomeDoctors;
+import GUI.patients.HomePatients;
+import GUI.reports.HomeReports;
+import java.io.IOException;
+import models.Receptionist;
+import DTO.ReportsDto;
+import GUI.appointments.HomeAppointments;
+
 public class Home extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Home.class.getName());
+
+    Receptionist receptionist;
 
     /**
      * Creates new form Home
      */
     public Home() {
+        initComponents();
+        this.setLocationRelativeTo(null);
+        this.setTitle("Inicio");
+    }
+
+    // Constructor parametrizado para inyección de dependencias
+    public Home(String id, String fullname) {
+        receptionist = new Receptionist(id, fullname, "");
         initComponents();
         this.setLocationRelativeTo(null);
         this.setTitle("Inicio");
@@ -32,6 +51,7 @@ public class Home extends javax.swing.JFrame {
         addAppointmentBtn = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         filesMenu = new javax.swing.JMenu();
+        appointmentsMenu = new javax.swing.JMenu();
         patientsMenu = new javax.swing.JMenu();
         doctorsMenu = new javax.swing.JMenu();
         reportsMenu = new javax.swing.JMenu();
@@ -97,17 +117,46 @@ public class Home extends javax.swing.JFrame {
 
         addAppointmentBtn.setFont(new java.awt.Font("Ubuntu", 0, 15)); // NOI18N
         addAppointmentBtn.setText("Agregar Cita");
+        addAppointmentBtn.addActionListener(this::addAppointmentBtnActionPerformed);
 
         filesMenu.setText("Archivos");
+        filesMenu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                filesMenuMouseClicked(evt);
+            }
+        });
         jMenuBar1.add(filesMenu);
 
+        appointmentsMenu.setText("Citas");
+        appointmentsMenu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                appointmentsMenuMouseClicked(evt);
+            }
+        });
+        jMenuBar1.add(appointmentsMenu);
+
         patientsMenu.setText("Pacientes");
+        patientsMenu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                patientsMenuMouseClicked(evt);
+            }
+        });
         jMenuBar1.add(patientsMenu);
 
         doctorsMenu.setText("Médicos");
+        doctorsMenu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                doctorsMenuMouseClicked(evt);
+            }
+        });
         jMenuBar1.add(doctorsMenu);
 
         reportsMenu.setText("Reportes");
+        reportsMenu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                reportsMenuMouseClicked(evt);
+            }
+        });
         jMenuBar1.add(reportsMenu);
 
         logoutMenu.setText("Cerrar Sesión");
@@ -165,11 +214,66 @@ public class Home extends javax.swing.JFrame {
     private void logoutMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_logoutMenuMouseClicked
         // Cerrar ventana de inicio
         this.dispose();
-        
+
         // Abrir ventana de login
         Login login = new Login();
         login.setVisible(true);
     }//GEN-LAST:event_logoutMenuMouseClicked
+
+    private void filesMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_filesMenuMouseClicked
+        // Verificación y creación de carpeta de reportes en caso no exista
+        ReportsDto reports = new ReportsDto();
+        try {
+            reports.createFolder();
+
+            // Apertura de carpeta
+            reports.openFolder();
+        } catch (IOException ex) {
+            System.getLogger(Home.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+    }//GEN-LAST:event_filesMenuMouseClicked
+
+    private void patientsMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_patientsMenuMouseClicked
+        // Cerrar ventana de inicio
+        this.dispose();
+        
+        // Abrir ventana de pacientes
+        HomePatients homePatients = new HomePatients(receptionist.getId(), receptionist.getFullName());
+        homePatients.setVisible(true);
+    }//GEN-LAST:event_patientsMenuMouseClicked
+
+    private void doctorsMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_doctorsMenuMouseClicked
+        // Cerrar ventana de inicio
+        this.dispose();
+        
+        // Abrir ventana de doctores
+        HomeDoctors homeDoctors = new HomeDoctors(receptionist.getId(), receptionist.getFullName());
+        homeDoctors.setVisible(true);
+    }//GEN-LAST:event_doctorsMenuMouseClicked
+
+    private void reportsMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_reportsMenuMouseClicked
+        // Cerrar ventana de inicio
+        this.dispose();
+        
+        // Abrir ventana de reportes
+        HomeReports homeReports = new HomeReports(receptionist.getId(), receptionist.getFullName());
+        homeReports.setVisible(true);
+    }//GEN-LAST:event_reportsMenuMouseClicked
+
+    private void addAppointmentBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addAppointmentBtnActionPerformed
+        // Apertura de ventana para creación de cita médica
+        CreateAppointment createAppointment = new CreateAppointment(receptionist.getId(), receptionist.getFullName());
+        createAppointment.setVisible(true);
+    }//GEN-LAST:event_addAppointmentBtnActionPerformed
+
+    private void appointmentsMenuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_appointmentsMenuMouseClicked
+        // Cerrar ventana de inicio
+        this.dispose();
+        
+        // Abrir ventana de citas
+        HomeAppointments homeAppointments = new HomeAppointments(receptionist.getId(), receptionist.getFullName());
+        homeAppointments.setVisible(true);
+    }//GEN-LAST:event_appointmentsMenuMouseClicked
 
     /**
      * @param args the command line arguments
@@ -198,6 +302,7 @@ public class Home extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addAppointmentBtn;
+    private javax.swing.JMenu appointmentsMenu;
     private javax.swing.JTable dataTable;
     private javax.swing.JMenu doctorsMenu;
     private javax.swing.JMenu filesMenu;
