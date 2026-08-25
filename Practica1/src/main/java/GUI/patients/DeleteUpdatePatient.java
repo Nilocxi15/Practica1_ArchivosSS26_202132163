@@ -25,7 +25,6 @@ public class DeleteUpdatePatient extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         this.setTitle("Actualizar - Eliminar Registro");
         this.id = id;
-        idDeleteInput.setText(id);
         this.setDataToUpdate();
     }
 
@@ -248,7 +247,7 @@ public class DeleteUpdatePatient extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "No fue posible eliminar el registro del paciente.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
-        
+
         this.dispose();
     }//GEN-LAST:event_deleteBtnActionPerformed
 
@@ -406,6 +405,9 @@ public class DeleteUpdatePatient extends javax.swing.JFrame {
         cellPhoneField.setText(p.getCellphone());
         emailField.setText(p.getEmail());
         bloodTypeComboBox.setSelectedIndex(bloodType);
+
+        // ID del campo en caso se desee eliminar el registro
+        idDeleteInput.setText(id);
     }
 
     /**

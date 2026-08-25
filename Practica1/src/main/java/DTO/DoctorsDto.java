@@ -87,8 +87,9 @@ public class DoctorsDto {
                 if (tempId.isBlank()) {
                     long position = raf.getFilePointer();
                     position = position - registerSize;
+                    raf.seek(position);
                     // Escritura de datos
-                    raf.writeBytes(doctor.getId());
+                    raf.writeBytes(String.format("%-36s", doctor.getId()));
                     raf.writeBytes(doctor.getName());
                     raf.writeBytes(doctor.getLastname());
                     raf.writeBytes(doctor.getSpeciality());
@@ -106,7 +107,7 @@ public class DoctorsDto {
             // En caso de no encontrar coincidencias, escribe al final del archivo
             raf.seek(raf.length());
             // Escritura de datos
-            raf.writeBytes(doctor.getId());
+            raf.writeBytes(String.format("%-36s", doctor.getId()));
             raf.writeBytes(doctor.getName());
             raf.writeBytes(doctor.getLastname());
             raf.writeBytes(doctor.getSpeciality());
@@ -176,15 +177,15 @@ public class DoctorsDto {
                 raf.readByte(); // Salto de línea
 
                 // Parseo de datos binarios a String
-                String id = new String(idData).trim();
-                String name = new String(nameData).trim();
-                String lastname = new String(lastnameData).trim();
-                String speciality = new String(specialityData).trim();
-                String cellphone = new String(cellphoneData).trim();
-                String email = new String(emailData).trim();
-                String startShift = new String(startShiftData).trim();
-                String endShift = new String(endShiftData).trim();
-                String state = new String(stateData).trim();
+                String id = new String(idData, java.nio.charset.StandardCharsets.ISO_8859_1).trim();
+                String name = new String(nameData, java.nio.charset.StandardCharsets.ISO_8859_1).trim();
+                String lastname = new String(lastnameData, java.nio.charset.StandardCharsets.ISO_8859_1).trim();
+                String speciality = new String(specialityData, java.nio.charset.StandardCharsets.ISO_8859_1).trim();
+                String cellphone = new String(cellphoneData, java.nio.charset.StandardCharsets.ISO_8859_1).trim();
+                String email = new String(emailData, java.nio.charset.StandardCharsets.ISO_8859_1).trim();
+                String startShift = new String(startShiftData, java.nio.charset.StandardCharsets.ISO_8859_1).trim();
+                String endShift = new String(endShiftData, java.nio.charset.StandardCharsets.ISO_8859_1).trim();
+                String state = new String(stateData, java.nio.charset.StandardCharsets.ISO_8859_1).trim();
 
                 // Verificación de registros eliminados (se ignoran)
                 if (id.isBlank()) {
@@ -203,11 +204,12 @@ public class DoctorsDto {
                 doctor = new Doctor(id, name, lastname, speciality, cellphone, email, startHour, endHour, stateBool);
                 doctors.add(doctor);
             }
+            raf.close();
 
             return doctors;
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return new ArrayList<>();
         }
     }
 
@@ -308,7 +310,7 @@ public class DoctorsDto {
         return d;
     }
 
-    private boolean deleteRegister(String id) {
+    public boolean deleteRegister(String id) {
         String deletedId = " ".repeat(36);
         if (id.equals(deletedId)) {
             return false;
@@ -345,6 +347,7 @@ public class DoctorsDto {
 
                 raf.readFully(idData);
                 raf.readFully(fieldsData);
+                raf.readByte();
 
                 tempId = new String(idData).trim();
 

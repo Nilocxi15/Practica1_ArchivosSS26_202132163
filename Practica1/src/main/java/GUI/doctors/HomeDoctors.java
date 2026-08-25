@@ -213,14 +213,15 @@ public class HomeDoctors extends javax.swing.JFrame {
                 .addGap(8, 8, 8)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(searchDoctorTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(filtersComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(createRegisterBtn)
-                    .addComponent(jLabel2)
-                    .addComponent(stateComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3)
-                    .addComponent(searchBtn))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(stateComboBox, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(searchDoctorTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(filtersComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(createRegisterBtn)
+                        .addComponent(jLabel2)
+                        .addComponent(jLabel3)
+                        .addComponent(searchBtn)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 542, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(50, 50, 50))
@@ -299,7 +300,7 @@ public class HomeDoctors extends javax.swing.JFrame {
             if (row >= 0) {
                 Object value = dataTable.getValueAt(row, 0);
 
-                DeleteUpdateDoctor duDoctor = new DeleteUpdateDoctor(receptionist.getId(), receptionist.getFullName());
+                DeleteUpdateDoctor duDoctor = new DeleteUpdateDoctor(String.valueOf(value));
                 duDoctor.setVisible(true);
             }
         }
@@ -334,6 +335,10 @@ public class HomeDoctors extends javax.swing.JFrame {
 
             for (int i = 0; i < dataTable.getColumnCount(); i++) {
                 dataTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+            }
+
+            if (dataList == null) {
+                dataList = new ArrayList<>();
             }
 
             // Llenado de tabla

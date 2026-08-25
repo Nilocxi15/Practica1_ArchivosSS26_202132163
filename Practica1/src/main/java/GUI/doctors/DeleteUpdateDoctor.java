@@ -1,5 +1,9 @@
 package GUI.doctors;
 
+import DTO.DoctorsDto;
+import java.time.LocalTime;
+import javax.swing.JOptionPane;
+import models.Doctor;
 import models.Receptionist;
 
 public class DeleteUpdateDoctor extends javax.swing.JFrame {
@@ -7,6 +11,8 @@ public class DeleteUpdateDoctor extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DeleteUpdateDoctor.class.getName());
 
     Receptionist receptionist;
+    private String id = "-1";
+    private boolean currentState = true;
     
     /**
      * Creates new form DeleteUpdateDoctor
@@ -15,12 +21,21 @@ public class DeleteUpdateDoctor extends javax.swing.JFrame {
         initComponents();
     }
     
+    public DeleteUpdateDoctor(String id) {
+        initComponents();
+        this.setLocationRelativeTo(null);
+        this.setTitle("Actualizar - Eliminar Registros");
+        this.id = id;
+        this.setDataToUpdate();
+    }
+
     public DeleteUpdateDoctor(String id, String fullname) {
         receptionist = new Receptionist(id, fullname, "");
         initComponents();
         this.setLocationRelativeTo(null);
         this.setTitle("Actualizar - Eliminar Registros");
-        
+        this.id = id;
+        this.setDataToUpdate();
     }
 
     /**
@@ -36,37 +51,37 @@ public class DeleteUpdateDoctor extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
+        idTextField = new javax.swing.JTextField();
+        nameTextField = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
-        jTextField4 = new javax.swing.JTextField();
+        lastnameTextField = new javax.swing.JTextField();
+        specialityTextField = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        jTextField5 = new javax.swing.JTextField();
-        jTextField6 = new javax.swing.JTextField();
+        cellphoneTextField = new javax.swing.JTextField();
+        emailTextField = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
-        jSpinField1 = new com.toedter.components.JSpinField();
+        startHourField = new com.toedter.components.JSpinField();
         jLabel9 = new javax.swing.JLabel();
-        jSpinField2 = new com.toedter.components.JSpinField();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        startMinuteField = new com.toedter.components.JSpinField();
+        startDaypartIndicatorComboBox = new javax.swing.JComboBox<>();
         jLabel10 = new javax.swing.JLabel();
-        jSpinField3 = new com.toedter.components.JSpinField();
+        endHourField = new com.toedter.components.JSpinField();
         jLabel11 = new javax.swing.JLabel();
-        jSpinField4 = new com.toedter.components.JSpinField();
-        jComboBox2 = new javax.swing.JComboBox<>();
-        jButton1 = new javax.swing.JButton();
+        endMinuteField = new com.toedter.components.JSpinField();
+        endDaypartIndicatorComboBox = new javax.swing.JComboBox<>();
+        updateBtn = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
-        jToggleButton1 = new javax.swing.JToggleButton();
+        stateToggleButton = new javax.swing.JToggleButton();
         jPanel3 = new javax.swing.JPanel();
-        jTextField7 = new javax.swing.JTextField();
+        idToDeleteField = new javax.swing.JTextField();
         jLabel14 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
+        deleteBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
@@ -77,7 +92,7 @@ public class DeleteUpdateDoctor extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Poppins", 1, 15)); // NOI18N
         jLabel2.setText("ID");
 
-        jTextField1.setEditable(false);
+        idTextField.setEditable(false);
 
         jLabel3.setFont(new java.awt.Font("Poppins", 1, 15)); // NOI18N
         jLabel3.setText("Nombres");
@@ -100,7 +115,7 @@ public class DeleteUpdateDoctor extends javax.swing.JFrame {
         jLabel9.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
         jLabel9.setText(":");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "A.M.", "P.M." }));
+        startDaypartIndicatorComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "AM", "PM" }));
 
         jLabel10.setFont(new java.awt.Font("Poppins", 1, 15)); // NOI18N
         jLabel10.setText("Hora Fin de Atención");
@@ -108,9 +123,10 @@ public class DeleteUpdateDoctor extends javax.swing.JFrame {
         jLabel11.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
         jLabel11.setText(":");
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "A.M.", "P.M." }));
+        endDaypartIndicatorComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "AM", "PM" }));
 
-        jButton1.setText("Actualizar");
+        updateBtn.setText("Actualizar");
+        updateBtn.addActionListener(this::updateBtnActionPerformed);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -123,43 +139,43 @@ public class DeleteUpdateDoctor extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(jTextField5, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(cellphoneTextField, javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addComponent(jTextField3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
-                                        .addComponent(jTextField1, javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(lastnameTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
+                                        .addComponent(idTextField, javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING))
                                     .addComponent(jLabel6)))
                             .addComponent(jLabel8)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jSpinField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(startHourField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel9)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jSpinField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(startMinuteField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(startDaypartIndicatorComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jSpinField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(endHourField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel11)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jSpinField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(endMinuteField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(endDaypartIndicatorComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jLabel10)
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(jButton1)
+                                .addComponent(updateBtn)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(jLabel7)
                                     .addComponent(jLabel5)
                                     .addComponent(jLabel3)
-                                    .addComponent(jTextField2)
-                                    .addComponent(jTextField4)
-                                    .addComponent(jTextField6, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE))))))
+                                    .addComponent(nameTextField)
+                                    .addComponent(specialityTextField)
+                                    .addComponent(emailTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE))))))
                 .addGap(30, 30, 30))
         );
         jPanel1Layout.setVerticalGroup(
@@ -176,24 +192,24 @@ public class DeleteUpdateDoctor extends javax.swing.JFrame {
                             .addComponent(jLabel3))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(idTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(nameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel4)
                             .addComponent(jLabel5))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(lastnameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(specialityTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel6)
                             .addComponent(jLabel7))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(cellphoneTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(emailTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
@@ -202,15 +218,15 @@ public class DeleteUpdateDoctor extends javax.swing.JFrame {
                                     .addComponent(jLabel10))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jSpinField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(startHourField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel9)
-                                    .addComponent(jSpinField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jSpinField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addComponent(jSpinField4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jComboBox2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addComponent(startMinuteField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(startDaypartIndicatorComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(endHourField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(endMinuteField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(endDaypartIndicatorComboBox, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(18, 18, 18)
-                .addComponent(jButton1)
+                .addComponent(updateBtn)
                 .addGap(30, 30, 30))
         );
 
@@ -222,7 +238,8 @@ public class DeleteUpdateDoctor extends javax.swing.JFrame {
         jLabel13.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
         jLabel13.setText("¿Deseas cambiar el estado del perfil?");
 
-        jToggleButton1.setText("Activo");
+        stateToggleButton.setText("Activo");
+        stateToggleButton.addActionListener(this::stateToggleButtonActionPerformed);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -239,25 +256,25 @@ public class DeleteUpdateDoctor extends javax.swing.JFrame {
                             .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(238, 238, 238)
-                        .addComponent(jToggleButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(stateToggleButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(111, 111, 111)))
                 .addContainerGap(159, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap(150, Short.MAX_VALUE)
+                .addContainerGap(148, Short.MAX_VALUE)
                 .addComponent(jLabel12)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel13)
                 .addGap(18, 18, 18)
-                .addComponent(jToggleButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
-                .addContainerGap(150, Short.MAX_VALUE))
+                .addComponent(stateToggleButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(148, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Activar / Desactivar", jPanel2);
 
-        jTextField7.setEditable(false);
+        idToDeleteField.setEditable(false);
 
         jLabel14.setFont(new java.awt.Font("Poppins", 1, 14)); // NOI18N
         jLabel14.setText("ID del registro");
@@ -265,8 +282,9 @@ public class DeleteUpdateDoctor extends javax.swing.JFrame {
         jLabel15.setFont(new java.awt.Font("Poppins", 1, 24)); // NOI18N
         jLabel15.setText("Eliminar Registro");
 
-        jButton2.setFont(new java.awt.Font("Poppins", 0, 12)); // NOI18N
-        jButton2.setText("Eliminar");
+        deleteBtn.setFont(new java.awt.Font("Poppins", 0, 12)); // NOI18N
+        deleteBtn.setText("Eliminar");
+        deleteBtn.addActionListener(this::deleteBtnActionPerformed);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -275,25 +293,25 @@ public class DeleteUpdateDoctor extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap(164, Short.MAX_VALUE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButton2)
+                    .addComponent(deleteBtn)
                     .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(jLabel15)
                         .addComponent(jLabel14)
-                        .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(idToDeleteField, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(164, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addContainerGap(136, Short.MAX_VALUE)
+                .addContainerGap(133, Short.MAX_VALUE)
                 .addComponent(jLabel15)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel14)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(idToDeleteField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton2)
-                .addContainerGap(135, Short.MAX_VALUE))
+                .addComponent(deleteBtn)
+                .addContainerGap(132, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Eliminar", jPanel3);
@@ -306,11 +324,276 @@ public class DeleteUpdateDoctor extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1)
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 449, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
+        int option = JOptionPane.showConfirmDialog(null, "¿Estás seguro de eliminar el registro de este doctor?",
+                "¡Advertencia!", JOptionPane.YES_NO_OPTION); // NO = 1, SI = 0
+
+        if (option == 0) {
+            DoctorsDto util = new DoctorsDto();
+            boolean success = util.deleteRegister(id);
+            if (success) {
+                JOptionPane.showMessageDialog(null, "Se eliminó exitosamente el registro del doctor.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, "No fue posible eliminar el registro del doctor.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+        this.dispose();
+    }//GEN-LAST:event_deleteBtnActionPerformed
+
+    private void updateBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateBtnActionPerformed
+        // Obtención de valores
+        String docId = idTextField.getText().trim();
+        String names = nameTextField.getText().trim();
+        String lastnames = lastnameTextField.getText().trim();
+        String speciality = specialityTextField.getText().trim();
+        String cellphone = cellphoneTextField.getText().trim();
+        String email = emailTextField.getText().trim();
+
+        int startHourShift;
+        int startMinuteShift;
+        String startShiftDaypartIndicator;
+
+        int endHourShift;
+        int endMinuteShift;
+        String endShiftDaypartIndicator;
+
+        try {
+            // Obtención de valores de hora de inicio de turno
+            startHourShift = startHourField.getValue();
+            startMinuteShift = startMinuteField.getValue();
+            startShiftDaypartIndicator = (String) startDaypartIndicatorComboBox.getSelectedItem();
+
+            // Obtención de valores de hora de finalización de turno
+            endHourShift = endHourField.getValue();
+            endMinuteShift = endMinuteField.getValue();
+            endShiftDaypartIndicator = (String) endDaypartIndicatorComboBox.getSelectedItem();
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Por favor, ingrese datos numéricos en los campos de horas y minutos", "Información Inválida", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        /*
+         * Verificación de longitud de campos
+         */
+        if (names.length() > 50 || lastnames.length() > 50) {
+            JOptionPane.showMessageDialog(null, "El tamaño máximo de la cadena para nombres o apellidos es de 50 carácteres, contando espacios.", "Campo de Nombre o Apellido Demasiado Largo", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (speciality.length() > 50) {
+            JOptionPane.showMessageDialog(null, "El tamaño máximo de la cadena para una especialidad es de 50 carácteres, contando espacios.", "Nombre de Especialidad Demasiado Largo", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (cellphone.length() > 14) {
+            JOptionPane.showMessageDialog(null, "Por favor verifica que ingresaste un número de celular con formato de Guatemala.", "Formato de Celular Incorrecto", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (email.length() > 100) {
+            JOptionPane.showMessageDialog(null, "Por favor ingresa una dirección de correo electrónico más corta.", "Dirección de Correo Demasiado Larga", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Verificación de obligatoriedad de campos
+        if (names.isBlank()) {
+            JOptionPane.showMessageDialog(null, "Por favor ingrese los nombres del doctor", "Nombre Vacío", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (lastnames.isBlank()) {
+            JOptionPane.showMessageDialog(null, "Por favor ingrese los apellidos del doctor", "Apellido Vacío", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (speciality.isBlank()) {
+            JOptionPane.showMessageDialog(null, "Por favor ingrese la especialidad del doctor.", "Especialidad Faltante", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (cellphone.isBlank()) {
+            JOptionPane.showMessageDialog(null, "Por favor ingresa el número celular del doctor", "Celular Vacío", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Verificación de RegEx de número celular
+        String regex = "^(?:\\+502 ?)?\\d{4}-?\\d{4}$";
+        if (!(cellphone.matches(regex))) {
+            JOptionPane.showMessageDialog(null, "Por favor, ingrese un número telefónico guatemalteco válido.", "Número Celular Inválido", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        LocalTime finalHourStart;
+        LocalTime finalHourEnd;
+
+        // Armado y verificación de horas de turno
+        try {
+            if (startHourShift < 1 || startHourShift > 12 || endHourShift < 1 || endHourShift > 12) {
+                JOptionPane.showMessageDialog(null, "Solamente es posible ingresar horas en un rango de 1 - 12.", "Hora Inválida", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (startMinuteShift < 0 || startMinuteShift > 59 || endMinuteShift < 0 || endMinuteShift > 59) {
+                JOptionPane.showMessageDialog(null, "Solamente es posible ingresar minutos en un rango de 00 - 59.", "Minutos Inválidos", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Conversión a formato 24h para inicio de turno
+            int hour24 = startHourShift;
+            if ("PM".equals(startShiftDaypartIndicator) && startHourShift < 12) {
+                hour24 += 12;
+            } else if ("AM".equals(startShiftDaypartIndicator) && startHourShift == 12) {
+                hour24 = 0;
+            }
+            finalHourStart = LocalTime.of(hour24, startMinuteShift);
+
+            // Conversión a formato 24h para fin de turno
+            hour24 = endHourShift;
+            if ("PM".equals(endShiftDaypartIndicator) && endHourShift < 12) {
+                hour24 += 12;
+            } else if ("AM".equals(endShiftDaypartIndicator) && endHourShift == 12) {
+                hour24 = 0;
+            }
+            finalHourEnd = LocalTime.of(hour24, endMinuteShift);
+
+            if (finalHourEnd.isBefore(finalHourStart)) {
+                JOptionPane.showMessageDialog(null, "El turno del médico no puede terminar antes que inicie.", "Horario Inválido", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "No fue posible procesar el horario de atención del doctor. Por favor verifica que hayas ingresado datos válidos.", "Error Inesperado", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        /*
+         * Al pasar todos los filtros, se procede a la actualización del objeto Doctor en el archivo persistente
+         */
+        DoctorsDto util = new DoctorsDto();
+        Doctor existingDoctor = util.searchRegister(docId);
+        boolean status = (existingDoctor != null) ? existingDoctor.isState() : this.currentState;
+
+        Doctor doctor = new Doctor(docId, names, lastnames, speciality, cellphone, email, finalHourStart, finalHourEnd, status);
+        boolean success = util.updateDoctor(doctor);
+
+        if (!success) {
+            JOptionPane.showMessageDialog(null, "No fue posible actualizar la información del doctor. Vuelve a intentarlo.", "Error Inesperado", JOptionPane.ERROR_MESSAGE);
+            this.dispose();
+            return;
+        }
+        JOptionPane.showMessageDialog(null, "Datos del doctor actualizados correctamente.", "Actualización Exitosa", JOptionPane.INFORMATION_MESSAGE);
+        this.dispose();
+    }//GEN-LAST:event_updateBtnActionPerformed
+
+    private void stateToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stateToggleButtonActionPerformed
+        boolean newState = stateToggleButton.isSelected();
+        String actionText = newState ? "activar" : "desactivar";
+
+        int option = JOptionPane.showConfirmDialog(null,
+                "¿Estás seguro de que deseas " + actionText + " el perfil de este doctor?",
+                "Confirmación de Estado", JOptionPane.YES_NO_OPTION);
+
+        if (option == JOptionPane.YES_OPTION) {
+            DoctorsDto util = new DoctorsDto();
+            Doctor d = util.searchRegister(id);
+            if (d != null) {
+                d.setState(newState);
+                boolean success = util.updateDoctor(d);
+                if (success) {
+                    this.currentState = newState;
+                    updateToggleButtonUI(newState);
+                    JOptionPane.showMessageDialog(null,
+                            "El estado del doctor se ha actualizado a: " + (newState ? "Activo" : "Inactivo"),
+                            "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null,
+                            "No fue posible actualizar el estado del doctor.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                    updateToggleButtonUI(this.currentState);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null,
+                        "No se encontró el registro del doctor.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                updateToggleButtonUI(this.currentState);
+            }
+        } else {
+            // Revertir el estado visual si cancela
+            updateToggleButtonUI(this.currentState);
+        }
+    }//GEN-LAST:event_stateToggleButtonActionPerformed
+
+    private void setDataToUpdate() {
+        DoctorsDto util = new DoctorsDto();
+        Doctor d = util.searchRegister(id);
+
+        if (d == null) {
+            JOptionPane.showMessageDialog(null, "No fue posible cargar la información de este doctor.", "Error Inesperado", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        idTextField.setText(d.getId());
+        idToDeleteField.setText(d.getId());
+        nameTextField.setText(d.getName().trim());
+        lastnameTextField.setText(d.getLastname().trim());
+        specialityTextField.setText(d.getSpeciality().trim());
+        cellphoneTextField.setText(d.getCellphone().trim());
+        emailTextField.setText(d.getEmail().trim());
+
+        // Parseo de horario de inicio de turno
+        LocalTime start = d.getStartShift();
+        int startHour = start.getHour();
+        int startMinute = start.getMinute();
+        String startAmPm = "AM";
+        if (startHour >= 12) {
+            startAmPm = "PM";
+            if (startHour > 12) {
+                startHour -= 12;
+            }
+        } else if (startHour == 0) {
+            startHour = 12;
+        }
+        startHourField.setValue(startHour);
+        startMinuteField.setValue(startMinute);
+        startDaypartIndicatorComboBox.setSelectedItem(startAmPm);
+
+        // Parseo de horario de fin de turno
+        LocalTime end = d.getEndShift();
+        int endHour = end.getHour();
+        int endMinute = end.getMinute();
+        String endAmPm = "AM";
+        if (endHour >= 12) {
+            endAmPm = "PM";
+            if (endHour > 12) {
+                endHour -= 12;
+            }
+        } else if (endHour == 0) {
+            endHour = 12;
+        }
+        endHourField.setValue(endHour);
+        endMinuteField.setValue(endMinute);
+        endDaypartIndicatorComboBox.setSelectedItem(endAmPm);
+
+        // Estado del perfil
+        this.currentState = d.isState();
+        updateToggleButtonUI(this.currentState);
+    }
+
+    private void updateToggleButtonUI(boolean state) {
+        stateToggleButton.setSelected(state);
+        if (state) {
+            stateToggleButton.setText("Activo");
+        } else {
+            stateToggleButton.setText("Inactivo");
+        }
+    }
 
     /**
      * @param args the command line arguments
@@ -338,10 +621,14 @@ public class DeleteUpdateDoctor extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JComboBox<String> jComboBox2;
+    private javax.swing.JTextField cellphoneTextField;
+    private javax.swing.JButton deleteBtn;
+    private javax.swing.JTextField emailTextField;
+    private javax.swing.JComboBox<String> endDaypartIndicatorComboBox;
+    private com.toedter.components.JSpinField endHourField;
+    private com.toedter.components.JSpinField endMinuteField;
+    private javax.swing.JTextField idTextField;
+    private javax.swing.JTextField idToDeleteField;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -360,18 +647,14 @@ public class DeleteUpdateDoctor extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private com.toedter.components.JSpinField jSpinField1;
-    private com.toedter.components.JSpinField jSpinField2;
-    private com.toedter.components.JSpinField jSpinField3;
-    private com.toedter.components.JSpinField jSpinField4;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
-    private javax.swing.JTextField jTextField5;
-    private javax.swing.JTextField jTextField6;
-    private javax.swing.JTextField jTextField7;
-    private javax.swing.JToggleButton jToggleButton1;
+    private javax.swing.JTextField lastnameTextField;
+    private javax.swing.JTextField nameTextField;
+    private javax.swing.JTextField specialityTextField;
+    private javax.swing.JComboBox<String> startDaypartIndicatorComboBox;
+    private com.toedter.components.JSpinField startHourField;
+    private com.toedter.components.JSpinField startMinuteField;
+    private javax.swing.JToggleButton stateToggleButton;
+    private javax.swing.JButton updateBtn;
     // End of variables declaration//GEN-END:variables
 }
