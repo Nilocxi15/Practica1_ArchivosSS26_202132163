@@ -40,15 +40,10 @@ public class PatientsDto {
         }
 
         // Verficación de longitudes de campos
-        // Verificación de nombre (50 caracteres)
         patient.setName(String.format("%-50s", patient.getName()));
-        // Verificación de apellido (50 caracteres)
         patient.setLastname(String.format("%-50s", patient.getLastname()));
-        // Verificación de número telefónico (14 digitos)
         patient.setCellphone(String.format("%-14s", patient.getCellphone()));
-        // Verificación de email (limitado a 100 caracteres posibles)
         patient.setEmail(String.format("%-100s", patient.getEmail()));
-        // Verificación de tipo de sangre (3 caracteres)
         patient.setBloodType(String.format("%-3s", patient.getBloodType()));
 
         // Escritura de registro nuevo
@@ -62,6 +57,10 @@ public class PatientsDto {
 
             long totalRegisters = raf.length() / registerSize;
 
+            String idFormatted = String.format("%-13s", patient.getID());
+            String birthdateFormatted = String.format("%-10s", patient.getBirthdate().toString());
+            String genderFormatted = String.format("%-1s", patient.getGender());
+
             for (int i = 0; i < totalRegisters; i++) {
                 byte[] idData = new byte[idSize];
                 byte[] fieldsData = new byte[fieldsSize];
@@ -70,19 +69,18 @@ public class PatientsDto {
                 raf.readFully(fieldsData);
                 raf.readByte();                
 
-                tempId = new String(idData).trim();
+                tempId = new String(idData, java.nio.charset.StandardCharsets.ISO_8859_1).trim();
 
                 // Si encuentra un registro "eliminado" escribe datos en esa posición                
                 if (tempId.isBlank()) {
-                    long position = raf.getFilePointer();
-                    position = position - registerSize;
+                    long position = raf.getFilePointer() - registerSize;
                     raf.seek(position);
                     // Escritura de datos
-                    raf.writeBytes(patient.getID());
+                    raf.writeBytes(idFormatted);
                     raf.writeBytes(patient.getName());
                     raf.writeBytes(patient.getLastname());
-                    raf.writeBytes(patient.getBirthdate().toString());
-                    raf.writeBytes(patient.getGender());
+                    raf.writeBytes(birthdateFormatted);
+                    raf.writeBytes(genderFormatted);
                     raf.writeBytes(patient.getCellphone());
                     raf.writeBytes(patient.getEmail());
                     raf.writeBytes(patient.getBloodType());
@@ -94,11 +92,11 @@ public class PatientsDto {
             // En caso de no encontrar coincidencia, escribe al final del archivo
             raf.seek(raf.length());
             // Escritura de datos
-            raf.writeBytes(patient.getID());
+            raf.writeBytes(idFormatted);
             raf.writeBytes(patient.getName());
             raf.writeBytes(patient.getLastname());
-            raf.writeBytes(patient.getBirthdate().toString());
-            raf.writeBytes(patient.getGender());
+            raf.writeBytes(birthdateFormatted);
+            raf.writeBytes(genderFormatted);
             raf.writeBytes(patient.getCellphone());
             raf.writeBytes(patient.getEmail());
             raf.writeBytes(patient.getBloodType());
@@ -133,11 +131,14 @@ public class PatientsDto {
             Patient patient;
             ArrayList<Patient> patients = new ArrayList<>();
 
+            java.io.File file = new java.io.File("data/patients.dat");
+            if (!file.exists()) {
+                return patients;
+            }
+
             RandomAccessFile raf = new RandomAccessFile("data/patients.dat", "r");
 
-            long totalRegisters = raf.length() / registerSize;
-
-            for (int i = 0; i < totalRegisters; i++) {
+            while (raf.getFilePointer() + 241 <= raf.length()) {
                 byte[] idData = new byte[idSize];
                 byte[] nameData = new byte[nameSize];
                 byte[] lastnameData = new byte[lastnameSize];
@@ -156,17 +157,27 @@ public class PatientsDto {
                 raf.readFully(cellphoneData);
                 raf.readFully(emailData);
                 raf.readFully(bloodTypeData);
-                raf.readByte(); // Salto de línea                
+
+                // Consumir salto de línea (\n o \r\n)
+                if (raf.getFilePointer() < raf.length()) {
+                    byte b = raf.readByte();
+                    if (b == '\r' && raf.getFilePointer() < raf.length()) {
+                        long mark = raf.getFilePointer();
+                        if (raf.readByte() != '\n') {
+                            raf.seek(mark);
+                        }
+                    }
+                }
 
                 // Parseo de datos binarios a String
-                String id = new String(idData).trim();
-                String name = new String(nameData).trim();
-                String lastname = new String(lastnameData).trim();
-                String birthdateStr = new String(birthdateData).trim();
-                String gender = new String(genderData).trim();
-                String cellphone = new String(cellphoneData).trim();
-                String email = new String(emailData).trim();
-                String bloodType = new String(bloodTypeData).trim();
+                String id = new String(idData, java.nio.charset.StandardCharsets.ISO_8859_1).trim();
+                String name = new String(nameData, java.nio.charset.StandardCharsets.ISO_8859_1).trim();
+                String lastname = new String(lastnameData, java.nio.charset.StandardCharsets.ISO_8859_1).trim();
+                String birthdateStr = new String(birthdateData, java.nio.charset.StandardCharsets.ISO_8859_1).trim();
+                String gender = new String(genderData, java.nio.charset.StandardCharsets.ISO_8859_1).trim();
+                String cellphone = new String(cellphoneData, java.nio.charset.StandardCharsets.ISO_8859_1).trim();
+                String email = new String(emailData, java.nio.charset.StandardCharsets.ISO_8859_1).trim();
+                String bloodType = new String(bloodTypeData, java.nio.charset.StandardCharsets.ISO_8859_1).trim();
 
                 // Verificación de espacios en blanco (se ignoran)
                 if (id.isBlank()) {
@@ -180,23 +191,30 @@ public class PatientsDto {
                 patient = new Patient(id, name, lastname, birthdate, gender, cellphone, email, bloodType);
                 patients.add(patient);
             }
+            raf.close();
 
             return patients;
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return new ArrayList<>();
         }
     }
 
     public ArrayList<Patient> searchData(String data, int attribute) {
         ArrayList<Patient> patients = readAll();
+        if (patients == null) {
+            return new ArrayList<>();
+        }
         ArrayList<Patient> patientsFiltered = new ArrayList<>();
+
+        if (data == null || data.isBlank()) {
+            return patients;
+        }
 
         switch (attribute) {
             case 0: // Ninguno
-                return null;
+                return patients;
             case 1: // No. Identificación                                
-                // Filtrado de búsqueda                
                 for (Patient patient : patients) {
                     if (patient.getID().contains(data)) {
                         patientsFiltered.add(patient);
@@ -204,7 +222,6 @@ public class PatientsDto {
                 }
                 break;
             case 2: // Nombre  
-                // Filtrado de búsqueda
                 for (Patient patient : patients) {
                     if (patient.getName().contains(data)) {
                         patientsFiltered.add(patient);
@@ -212,7 +229,6 @@ public class PatientsDto {
                 }
                 break;
             case 3: // Apellido
-                // Filtrado de búsqueda
                 for (Patient patient : patients) {
                     if (patient.getLastname().contains(data)) {
                         patientsFiltered.add(patient);
@@ -220,24 +236,28 @@ public class PatientsDto {
                 }
                 break;
             default:
-                patientsFiltered = null;
-                throw new AssertionError();
+                patientsFiltered = patients;
+                break;
         }
         return patientsFiltered;
     }
 
     public Patient searchRegister(String id) {
+        if (id == null || id.isBlank()) {
+            return null;
+        }
         ArrayList<Patient> patients = readAll();
-
-        Patient p = null;
+        if (patients == null) {
+            return null;
+        }
 
         for (Patient patient : patients) {
-            if (patient.getID().equals(id)) {
-                p = patient;
+            if (patient.getID().equals(id.trim())) {
+                return patient;
             }
         }
 
-        return p;
+        return null;
     }
 
     public boolean deleteRegister(String id) {

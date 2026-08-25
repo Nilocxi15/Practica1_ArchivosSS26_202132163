@@ -338,6 +338,8 @@ public class DeleteUpdateDoctor extends javax.swing.JFrame {
             DoctorsDto util = new DoctorsDto();
             boolean success = util.deleteRegister(id);
             if (success) {
+                String logUser = (receptionist != null) ? receptionist.getFullName() + " (" + receptionist.getId() + ")" : "Recepcionista";
+                DTO.ReportsDto.recordLog(logUser, "Médicos", "Eliminación", "Médico UUID " + id + " eliminado del sistema");
                 JOptionPane.showMessageDialog(null, "Se eliminó exitosamente el registro del doctor.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(null, "No fue posible eliminar el registro del doctor.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -488,6 +490,8 @@ public class DeleteUpdateDoctor extends javax.swing.JFrame {
             this.dispose();
             return;
         }
+        String logUser = (receptionist != null) ? receptionist.getFullName() + " (" + receptionist.getId() + ")" : "Recepcionista";
+        DTO.ReportsDto.recordLog(logUser, "Médicos", "Actualización", "Datos del médico UUID " + docId + " (" + names + " " + lastnames + ") actualizados");
         JOptionPane.showMessageDialog(null, "Datos del doctor actualizados correctamente.", "Actualización Exitosa", JOptionPane.INFORMATION_MESSAGE);
         this.dispose();
     }//GEN-LAST:event_updateBtnActionPerformed
@@ -509,6 +513,9 @@ public class DeleteUpdateDoctor extends javax.swing.JFrame {
                 if (success) {
                     this.currentState = newState;
                     updateToggleButtonUI(newState);
+                    String logUser = (receptionist != null) ? receptionist.getFullName() + " (" + receptionist.getId() + ")" : "Recepcionista";
+                    DTO.ReportsDto.recordLog(logUser, "Médicos", "Actualización",
+                            "Estado del médico UUID " + id + " cambiado a " + (newState ? "Activo" : "Inactivo"));
                     JOptionPane.showMessageDialog(null,
                             "El estado del doctor se ha actualizado a: " + (newState ? "Activo" : "Inactivo"),
                             "Éxito", JOptionPane.INFORMATION_MESSAGE);

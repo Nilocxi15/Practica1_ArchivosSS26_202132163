@@ -1,24 +1,131 @@
 package GUI.appointments;
 
+import DTO.AppointmentsDto;
+import DTO.DoctorsDto;
+import DTO.PatientsDto;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
+import java.util.UUID;
+import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import models.Appointment;
+import models.Doctor;
+import models.Patient;
+import models.Receptionist;
+
 public class CreateAppointment extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CreateAppointment.class.getName());
+
+    private Receptionist receptionist;
+    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.ENGLISH);
+    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     /**
      * Creates new form CreateAppointment
      */
     public CreateAppointment() {
         initComponents();
+        this.setLocationRelativeTo(null);
+        this.setTitle("Programar Cita");
+        initCustomSettings();
     }
-    
+
     // Constructor parametrizado para inyección de dependencias
-    public CreateAppointment(String id, String name) {
+    public CreateAppointment(String id, String fullname) {
+        receptionist = new Receptionist(id, fullname, "");
         initComponents();
         this.setLocationRelativeTo(null);
-        this.setTitle("Crear Cita");
+        this.setTitle("Programar Cita");
+        initCustomSettings();
     }
-    
-    
+
+    private void initCustomSettings() {
+        hourField.setValue(8);
+        minuteField.setValue(0);
+        appointmentDateField.setDate(new Date());
+        loadPatientsTable(null);
+        loadDoctorsTable(null);
+    }
+
+    /**
+     * Carga y muestra los pacientes en la tabla de pacientes.
+     */
+    private void loadPatientsTable(ArrayList<Patient> list) {
+        try {
+            if (list == null) {
+                PatientsDto patientsDto = new PatientsDto();
+                list = patientsDto.readAll();
+            }
+
+            DefaultTableModel model = (DefaultTableModel) patientesDataTable.getModel();
+            model.setRowCount(0);
+
+            DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+            centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+            for (int i = 0; i < patientesDataTable.getColumnCount(); i++) {
+                patientesDataTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+            }
+
+            if (list != null) {
+                for (Patient p : list) {
+                    model.addRow(new Object[]{
+                        p.getID(),
+                        p.getName() + " " + p.getLastname(),
+                        p.getBirthdate() != null ? p.getBirthdate().format(dateFormatter) : ""
+                    });
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Carga y muestra únicamente los médicos activos en la tabla de médicos.
+     */
+    private void loadDoctorsTable(ArrayList<Doctor> list) {
+        try {
+            if (list == null) {
+                DoctorsDto doctorsDto = new DoctorsDto();
+                list = doctorsDto.readDoctorsActives();
+            }
+
+            DefaultTableModel model = (DefaultTableModel) doctorsDataTable.getModel();
+            model.setRowCount(0);
+
+            DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+            centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+            for (int i = 0; i < doctorsDataTable.getColumnCount(); i++) {
+                doctorsDataTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+            }
+
+            if (list != null) {
+                for (Doctor d : list) {
+                    String schedule = (d.getStartShift() != null ? d.getStartShift().format(timeFormatter) : "")
+                            + " - "
+                            + (d.getEndShift() != null ? d.getEndShift().format(timeFormatter) : "");
+                    model.addRow(new Object[]{
+                        d.getId(),
+                        d.getName() + " " + d.getLastname(),
+                        d.getSpeciality(),
+                        schedule
+                    });
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -86,6 +193,11 @@ public class CreateAppointment extends javax.swing.JFrame {
             }
         });
         patientesDataTable.getTableHeader().setReorderingAllowed(false);
+        patientesDataTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                patientesDataTableMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(patientesDataTable);
         if (patientesDataTable.getColumnModel().getColumnCount() > 0) {
             patientesDataTable.getColumnModel().getColumn(0).setResizable(false);
@@ -95,16 +207,14 @@ public class CreateAppointment extends javax.swing.JFrame {
 
         searchPatientBtn.setFont(new java.awt.Font("Ubuntu", 0, 15)); // NOI18N
         searchPatientBtn.setText("Buscar");
+        searchPatientBtn.addActionListener(this::searchPatientBtnActionPerformed);
 
         jLabel3.setFont(new java.awt.Font("Ubuntu", 1, 18)); // NOI18N
         jLabel3.setText("Médicos");
 
         doctorsDataTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
                 "ID", "Nombre", "Especialidad", "Horario Atención"
@@ -119,6 +229,11 @@ public class CreateAppointment extends javax.swing.JFrame {
             }
         });
         doctorsDataTable.getTableHeader().setReorderingAllowed(false);
+        doctorsDataTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                doctorsDataTableMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(doctorsDataTable);
         if (doctorsDataTable.getColumnModel().getColumnCount() > 0) {
             doctorsDataTable.getColumnModel().getColumn(0).setResizable(false);
@@ -139,6 +254,7 @@ public class CreateAppointment extends javax.swing.JFrame {
 
         doctorsSearchBtn.setFont(new java.awt.Font("Ubuntu", 0, 15)); // NOI18N
         doctorsSearchBtn.setText("Buscar");
+        doctorsSearchBtn.addActionListener(this::doctorsSearchBtnActionPerformed);
 
         jLabel6.setFont(new java.awt.Font("Ubuntu", 1, 15)); // NOI18N
         jLabel6.setText("Fecha de la cita.");
@@ -162,6 +278,7 @@ public class CreateAppointment extends javax.swing.JFrame {
 
         createBtn.setFont(new java.awt.Font("Ubuntu", 0, 15)); // NOI18N
         createBtn.setText("Crear");
+        createBtn.addActionListener(this::createBtnActionPerformed);
 
         jLabel10.setFont(new java.awt.Font("Ubuntu", 0, 18)); // NOI18N
         jLabel10.setText(":");
@@ -271,6 +388,225 @@ public class CreateAppointment extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void patientesDataTableMouseClicked(java.awt.event.MouseEvent evt) {
+        int row = patientesDataTable.getSelectedRow();
+        if (row >= 0) {
+            Object val = patientesDataTable.getValueAt(row, 0);
+            if (val != null) {
+                idPatientField.setText(String.valueOf(val).trim());
+            }
+        }
+    }
+
+    private void doctorsDataTableMouseClicked(java.awt.event.MouseEvent evt) {
+        int row = doctorsDataTable.getSelectedRow();
+        if (row >= 0) {
+            Object val = doctorsDataTable.getValueAt(row, 0);
+            if (val != null) {
+                idDoctorField.setText(String.valueOf(val).trim());
+            }
+        }
+    }
+
+    private void searchPatientBtnActionPerformed(java.awt.event.ActionEvent evt) {
+        String query = searchPatientField.getText().trim().toLowerCase();
+        PatientsDto patientsDto = new PatientsDto();
+        ArrayList<Patient> allPatients = patientsDto.readAll();
+
+        if (query.isBlank() || allPatients == null) {
+            loadPatientsTable(allPatients);
+            return;
+        }
+
+        ArrayList<Patient> filtered = new ArrayList<>();
+        for (Patient p : allPatients) {
+            String fullName = (p.getName() + " " + p.getLastname()).toLowerCase();
+            if (p.getID().toLowerCase().contains(query) || fullName.contains(query)) {
+                filtered.add(p);
+            }
+        }
+        loadPatientsTable(filtered);
+    }
+
+    private void doctorsSearchBtnActionPerformed(java.awt.event.ActionEvent evt) {
+        String query = doctorsSearchField.getText().trim().toLowerCase();
+        DoctorsDto doctorsDto = new DoctorsDto();
+        ArrayList<Doctor> activeDoctors = doctorsDto.readDoctorsActives();
+
+        if (query.isBlank() || activeDoctors == null) {
+            loadDoctorsTable(activeDoctors);
+            return;
+        }
+
+        ArrayList<Doctor> filtered = new ArrayList<>();
+        for (Doctor d : activeDoctors) {
+            String fullName = (d.getName() + " " + d.getLastname()).toLowerCase();
+            if (d.getId().toLowerCase().contains(query)
+                    || fullName.contains(query)
+                    || d.getSpeciality().toLowerCase().contains(query)) {
+                filtered.add(d);
+            }
+        }
+        loadDoctorsTable(filtered);
+    }
+
+    private void createBtnActionPerformed(java.awt.event.ActionEvent evt) {
+        String idPatient = idPatientField.getText().trim();
+        String idDoctor = idDoctorField.getText().trim();
+        Date selectedDate = appointmentDateField.getDate();
+        int hour = hourField.getValue();
+        int minute = minuteField.getValue();
+        String ampmRaw = scheduleComboBox.getSelectedItem() != null ? scheduleComboBox.getSelectedItem().toString() : "AM";
+        String ampm = ampmRaw.toUpperCase().replace(".", "").trim();
+        String reason = consultationReasonTextArea.getText().trim();
+        String observations = observationTextArea.getText().trim();
+
+        // Verificación de selección de paciente
+        if (idPatient.isBlank()) {
+            JOptionPane.showMessageDialog(this, "Por favor, seleccione un paciente de la tabla.", "Paciente no Seleccionado", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Verificación de selección de médico
+        if (idDoctor.isBlank()) {
+            JOptionPane.showMessageDialog(this, "Por favor, seleccione un médico de la tabla.", "Médico no Seleccionado", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Verificación de existencia del paciente
+        PatientsDto patientsDto = new PatientsDto();
+        Patient patient = patientsDto.searchRegister(idPatient);
+        if (patient == null) {
+            JOptionPane.showMessageDialog(this, "El paciente seleccionado no existe en el sistema.", "Paciente Inválido", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Verificación de existencia y estado activo del médico
+        DoctorsDto doctorsDto = new DoctorsDto();
+        Doctor doctor = doctorsDto.searchRegister(idDoctor);
+        if (doctor == null) {
+            JOptionPane.showMessageDialog(this, "El médico seleccionado no existe en el sistema.", "Médico Inválido", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (!doctor.isState()) {
+            JOptionPane.showMessageDialog(this, "El médico seleccionado se encuentra inactivo y no puede atender citas.", "Médico Inactivo", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Verificación de fecha
+        if (selectedDate == null) {
+            JOptionPane.showMessageDialog(this, "Por favor, seleccione una fecha para la cita.", "Fecha Inválida", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        LocalDate appointmentDate = selectedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        if (appointmentDate.isBefore(LocalDate.now())) {
+            JOptionPane.showMessageDialog(this, "No es posible programar una cita en una fecha pasada.", "Fecha Inválida", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Verificación de horas y minutos
+        if (hour < 1 || hour > 12) {
+            JOptionPane.showMessageDialog(this, "La hora debe estar en el rango de 1 a 12.", "Hora Inválida", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (minute < 0 || minute > 59) {
+            JOptionPane.showMessageDialog(this, "Los minutos deben estar en el rango de 00 a 59.", "Minutos Inválidos", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Conversión a formato 24 horas (LocalTime)
+        int hour24 = hour;
+        if ("PM".equals(ampm) && hour < 12) {
+            hour24 += 12;
+        } else if ("AM".equals(ampm) && hour == 12) {
+            hour24 = 0;
+        }
+        LocalTime appointmentHour = LocalTime.of(hour24, minute);
+
+        // Verificación de horario de atención del médico
+        LocalTime doctorStart = doctor.getStartShift();
+        LocalTime doctorEnd = doctor.getEndShift();
+        if (appointmentHour.isBefore(doctorStart) || appointmentHour.isAfter(doctorEnd)) {
+            String doctorSchedule = doctorStart.format(timeFormatter) + " a " + doctorEnd.format(timeFormatter);
+            JOptionPane.showMessageDialog(this,
+                    "El médico seleccionado no está disponible a esa hora.\nSu horario de atención es de: " + doctorSchedule,
+                    "Médico Fuera de Horario", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Verificación de conflicto de horario del médico (no traslape de citas programadas)
+        AppointmentsDto appointmentsDto = new AppointmentsDto();
+        ArrayList<Appointment> doctorAppointments = appointmentsDto.readAppointmentsByDoctor(idDoctor);
+        for (Appointment existing : doctorAppointments) {
+            if (AppointmentsDto.STATE_PROGRAMADA.equalsIgnoreCase(existing.getState())
+                    && existing.getDate().equals(appointmentDate)
+                    && existing.getHour().equals(appointmentHour)) {
+                JOptionPane.showMessageDialog(this,
+                        "El médico ya tiene una cita programada para el " + appointmentDate.format(dateFormatter)
+                        + " a las " + appointmentHour.format(timeFormatter) + ".\nPor favor seleccione otro horario.",
+                        "Horario no Disponible", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+
+        // Verificación de conflicto de horario del paciente
+        ArrayList<Appointment> patientAppointments = appointmentsDto.readAppointmentsByPatient(idPatient);
+        for (Appointment existing : patientAppointments) {
+            if (AppointmentsDto.STATE_PROGRAMADA.equalsIgnoreCase(existing.getState())
+                    && existing.getDate().equals(appointmentDate)
+                    && existing.getHour().equals(appointmentHour)) {
+                JOptionPane.showMessageDialog(this,
+                        "El paciente ya tiene una cita programada en la misma fecha y hora con otro médico.",
+                        "Conflicto de Horario del Paciente", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+
+        // Verificación de motivo de consulta
+        if (reason.isBlank()) {
+            JOptionPane.showMessageDialog(this, "Por favor, ingrese el motivo de la consulta.", "Motivo Vacío", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (reason.length() > 150) {
+            JOptionPane.showMessageDialog(this, "El motivo de la consulta no puede exceder los 150 caracteres.", "Texto Demasiado Largo", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Verificación de observaciones
+        if (observations.length() > 150) {
+            JOptionPane.showMessageDialog(this, "Las observaciones no pueden exceder los 150 caracteres.", "Texto Demasiado Largo", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Creación y persistencia de la cita
+        UUID uniqueId = UUID.randomUUID();
+        Appointment newAppointment = new Appointment(
+                uniqueId.toString(),
+                idPatient,
+                idDoctor,
+                appointmentDate,
+                appointmentHour,
+                reason,
+                AppointmentsDto.STATE_PROGRAMADA,
+                observations
+        );
+
+        boolean success = appointmentsDto.writeRegister(newAppointment);
+
+        if (!success) {
+            JOptionPane.showMessageDialog(this, "No fue posible registrar la cita médica. Intente nuevamente.", "Error al Guardar", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String logUser = (receptionist != null) ? receptionist.getFullName() + " (" + receptionist.getId() + ")" : "Recepcionista";
+        DTO.ReportsDto.recordLog(logUser, "Citas", "Creación",
+                "Cita UUID " + uniqueId.toString() + " programada para paciente " + idPatient + " con médico " + idDoctor + " el " + appointmentDate.format(dateFormatter) + " a las " + appointmentHour.format(timeFormatter));
+
+        JOptionPane.showMessageDialog(this, "Cita médica programada exitosamente.", "Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
+        this.dispose();
+    }
 
     /**
      * @param args the command line arguments

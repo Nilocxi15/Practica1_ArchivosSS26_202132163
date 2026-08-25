@@ -29,6 +29,10 @@ public class Patient {
         return ID;
     }
 
+    public String getId() {
+        return ID;
+    }
+
     public String getName() {
         return name;
     }

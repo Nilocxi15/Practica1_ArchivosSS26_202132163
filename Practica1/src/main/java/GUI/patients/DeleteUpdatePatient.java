@@ -12,6 +12,7 @@ public class DeleteUpdatePatient extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DeleteUpdatePatient.class.getName());
 
     private String id = "-1";
+    private models.Receptionist receptionist;
 
     /**
      * Creates new form DeleteUpdate
@@ -21,6 +22,15 @@ public class DeleteUpdatePatient extends javax.swing.JFrame {
     }
 
     public DeleteUpdatePatient(String id) {
+        initComponents();
+        this.setLocationRelativeTo(null);
+        this.setTitle("Actualizar - Eliminar Registro");
+        this.id = id;
+        this.setDataToUpdate();
+    }
+
+    public DeleteUpdatePatient(String id, String recId, String recFullname) {
+        this.receptionist = new models.Receptionist(recId, recFullname, "");
         initComponents();
         this.setLocationRelativeTo(null);
         this.setTitle("Actualizar - Eliminar Registro");
@@ -242,6 +252,8 @@ public class DeleteUpdatePatient extends javax.swing.JFrame {
             PatientsDto util = new PatientsDto();
             boolean success = util.deleteRegister(id);
             if (success) {
+                String logUser = (receptionist != null) ? receptionist.getFullName() + " (" + receptionist.getId() + ")" : "Recepcionista";
+                DTO.ReportsDto.recordLog(logUser, "Pacientes", "Eliminación", "Paciente ID " + id + " eliminado del sistema");
                 JOptionPane.showMessageDialog(null, "Se eliminó exitosamente el registro del paciente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(null, "No fue posible eliminar el registro del paciente.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -350,6 +362,8 @@ public class DeleteUpdatePatient extends javax.swing.JFrame {
             this.dispose();
             return;
         }
+        String logUser = (receptionist != null) ? receptionist.getFullName() + " (" + receptionist.getId() + ")" : "Recepcionista";
+        DTO.ReportsDto.recordLog(logUser, "Pacientes", "Actualización", "Datos del paciente ID " + id + " (" + names + " " + lastnames + ") actualizados");
         JOptionPane.showMessageDialog(null, "Datos del paciente actualizados correctamente.", "Actualización Exitosa", JOptionPane.INFORMATION_MESSAGE);
         this.dispose();
     }//GEN-LAST:event_updateBtnActionPerformed

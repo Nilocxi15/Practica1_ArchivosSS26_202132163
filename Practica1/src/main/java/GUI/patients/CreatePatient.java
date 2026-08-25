@@ -274,6 +274,9 @@ public class CreatePatient extends javax.swing.JFrame {
             this.dispose();
             return;
         }
+        String logUser = (receptionist != null) ? receptionist.getFullName() + " (" + receptionist.getId() + ")" : "Recepcionista";
+        DTO.ReportsDto.recordLog(logUser, "Pacientes", "Creación",
+                "Paciente registrado con ID " + id + ": " + names + " " + lastnames + " (" + bloodType + ")");
         JOptionPane.showMessageDialog(null, "Datos del paciente registrados correctamente.", "Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
         this.dispose();
     }//GEN-LAST:event_createBtnActionPerformed

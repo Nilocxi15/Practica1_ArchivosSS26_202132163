@@ -340,6 +340,10 @@ public class HomePatients extends javax.swing.JFrame {
                 dataTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
             }
 
+            if (dataList == null) {
+                dataList = new ArrayList<>();
+            }
+
             // Llenado de tabla
             for (Patient patient : dataList) {
 

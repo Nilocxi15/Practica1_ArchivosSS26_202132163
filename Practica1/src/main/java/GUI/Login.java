@@ -1,13 +1,15 @@
 package GUI;
 
 import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import models.Receptionist;
 
 public class Login extends javax.swing.JFrame {
 
     // Variables globales
-    Receptionist[] receptionists = new Receptionist[10];
+    private ArrayList<Receptionist> receptionists = new ArrayList<>();
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Login.class.getName());
 
@@ -108,37 +110,46 @@ public class Login extends javax.swing.JFrame {
 
     private void retrieveData() {
         try {
-            // Declaración de tamaños específicos de cada campo
             final int idSize = 36;
             final int fullNameSize = 16;
             final int passwordSize = 2;
 
-            /* 
-             * Arreglo de objetos           
-            */
-            Receptionist receptionist;
-
+            receptionists.clear();
             RandomAccessFile raf = new RandomAccessFile("data/roles.dat", "r");
 
-            for (int i = 0; i < 10; i++) {
+            while (raf.getFilePointer() < raf.length()) {
+                if (raf.getFilePointer() + idSize + fullNameSize + passwordSize > raf.length()) {
+                    break;
+                }
+
                 byte[] idData = new byte[idSize];
                 byte[] fullNameData = new byte[fullNameSize];
                 byte[] passwordData = new byte[passwordSize];
 
-                // Lectura de campos junto con movimiento de cursor
+                // Lectura de campos
                 raf.readFully(idData);
                 raf.readFully(fullNameData);
                 raf.readFully(passwordData);
-                raf.readByte();
-                raf.readByte();
+
+                // Manejo de fin de línea (\n o \r\n)
+                if (raf.getFilePointer() < raf.length()) {
+                    byte b = raf.readByte();
+                    if (b == '\r' && raf.getFilePointer() < raf.length()) {
+                        long mark = raf.getFilePointer();
+                        if (raf.readByte() != '\n') {
+                            raf.seek(mark);
+                        }
+                    }
+                }
 
                 // Parse de datos binarios a string
-                String id = new String(idData).trim();
-                String fullname = new String(fullNameData).trim();
-                String password = new String(passwordData).trim();
+                String id = new String(idData, StandardCharsets.ISO_8859_1).trim();
+                String fullname = new String(fullNameData, StandardCharsets.ISO_8859_1).trim();
+                String password = new String(passwordData, StandardCharsets.ISO_8859_1).trim();
 
-                receptionist = new Receptionist(id, fullname, password);
-                receptionists[i] = receptionist;
+                if (!id.isEmpty()) {
+                    receptionists.add(new Receptionist(id, fullname, password));
+                }
             }
             raf.close();
         } catch (Exception e) {
@@ -154,10 +165,10 @@ public class Login extends javax.swing.JFrame {
                 return;
             }
 
-            Receptionist receptionist;
-            for (int i = 0; i < 10; i++) {
-                receptionist = receptionists[i];
-                if (receptionist.getPassword().equals(password)) {
+            for (Receptionist receptionist : receptionists) {
+                if (receptionist != null && receptionist.getPassword().equals(password)) {
+                    DTO.ReportsDto.recordLog(receptionist.getFullName() + " (" + receptionist.getId() + ")",
+                            "Autenticación / Sistema", "Login / Logout", "Inicio de sesión de usuario en el sistema");
                     this.dispose();
                     Home home = new Home(receptionist.getId(), receptionist.getFullName());
                     home.setVisible(true);

@@ -376,6 +376,9 @@ public class CreateDoctor extends javax.swing.JFrame {
             this.dispose();
             return;
         }
+        String logUser = (receptionist != null) ? receptionist.getFullName() + " (" + receptionist.getId() + ")" : "Recepcionista";
+        DTO.ReportsDto.recordLog(logUser, "Médicos", "Creación",
+                "Médico registrado con UUID " + id + ": " + names + " " + lastnames + " (" + speciality + ")");
         JOptionPane.showMessageDialog(null, "Datos del doctor registrados correctamente.", "Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
         this.dispose();
     }//GEN-LAST:event_createRegisterBtnActionPerformed

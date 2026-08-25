@@ -4,19 +4,102 @@
  */
 package GUI.appointments;
 
+import DTO.AppointmentsDto;
+import DTO.DoctorsDto;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
+import javax.swing.JOptionPane;
+import models.Appointment;
+import models.Doctor;
+
 /**
  *
  * @author hamme
  */
 public class DeleteUpdateAppointment extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DeleteUpdateAppointment.class.getName());
+
+    private String id;
+    private Appointment currentAppointment;
+    private models.Receptionist receptionist;
 
     /**
      * Creates new form DeleteUpdateAppointment
      */
     public DeleteUpdateAppointment() {
         initComponents();
+    }
+
+    public DeleteUpdateAppointment(String id) {
+        initComponents();
+        this.setLocationRelativeTo(null);
+        this.setTitle("Gestionar Cita Médica");
+        this.id = id;
+        this.setDataToUpdate();
+    }
+
+    public DeleteUpdateAppointment(String id, String recId, String recFullname) {
+        this.receptionist = new models.Receptionist(recId, recFullname, "");
+        initComponents();
+        this.setLocationRelativeTo(null);
+        this.setTitle("Gestionar Cita Médica");
+        this.id = id;
+        this.setDataToUpdate();
+    }
+
+    private void setDataToUpdate() {
+        if (id == null || id.isBlank()) {
+            return;
+        }
+
+        AppointmentsDto appointmentsDto = new AppointmentsDto();
+        currentAppointment = appointmentsDto.searchRegister(id);
+
+        if (currentAppointment == null) {
+            JOptionPane.showMessageDialog(this, "No se encontró la cita médica seleccionada.", "Cita no encontrada", JOptionPane.ERROR_MESSAGE);
+            this.dispose();
+            return;
+        }
+
+        if (idField != null) {
+            idField.setText(id);
+        }
+
+        if (stateInfoLabel != null) {
+            stateInfoLabel.setText("Estado actual: " + currentAppointment.getState());
+        }
+
+        // Si ya está atendida o cancelada, deshabilitar acciones que no aplican
+        boolean isProgrammed = AppointmentsDto.STATE_PROGRAMADA.equalsIgnoreCase(currentAppointment.getState());
+        if (!isProgrammed) {
+            if (attendBtn != null) attendBtn.setEnabled(false);
+            if (cancelBtn != null) cancelBtn.setEnabled(false);
+            if (rescheduleBtn != null) rescheduleBtn.setEnabled(false);
+        }
+
+        // Cargar fecha
+        if (dateChooser != null && currentAppointment.getDate() != null) {
+            Date date = Date.from(currentAppointment.getDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
+            dateChooser.setDate(date);
+        }
+
+        // Cargar hora y minutos
+        if (currentAppointment.getHour() != null) {
+            int h = currentAppointment.getHour().getHour();
+            int m = currentAppointment.getHour().getMinute();
+            int h12 = (h % 12 == 0) ? 12 : (h % 12);
+            String ampm = (h >= 12) ? "PM" : "AM";
+
+            if (hourSpinField != null) hourSpinField.setValue(h12);
+            if (minuteSpinField != null) minuteSpinField.setValue(m);
+            if (scheduleComboBox != null) scheduleComboBox.setSelectedItem(ampm);
+        }
     }
 
     /**
@@ -31,7 +114,9 @@ public class DeleteUpdateAppointment extends javax.swing.JFrame {
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
+        stateInfoLabel = new javax.swing.JLabel();
         attendBtn = new javax.swing.JButton();
+        cancelBtn = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         hourSpinField = new com.toedter.components.JSpinField();
@@ -39,6 +124,7 @@ public class DeleteUpdateAppointment extends javax.swing.JFrame {
         minuteSpinField = new com.toedter.components.JSpinField();
         scheduleComboBox = new javax.swing.JComboBox<>();
         rescheduleBtn = new javax.swing.JButton();
+        dateChooser = new com.toedter.calendar.JDateChooser();
         jPanel3 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         idField = new javax.swing.JTextField();
@@ -48,34 +134,51 @@ public class DeleteUpdateAppointment extends javax.swing.JFrame {
         setResizable(false);
 
         jLabel1.setFont(new java.awt.Font("Poppins", 1, 18)); // NOI18N
-        jLabel1.setText("Atender Cita");
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("Gestión del Estado de la Cita");
 
-        attendBtn.setText("Atender");
+        stateInfoLabel.setFont(new java.awt.Font("Poppins", 0, 14)); // NOI18N
+        stateInfoLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        stateInfoLabel.setText("Estado actual: Programada");
+
+        attendBtn.setFont(new java.awt.Font("Poppins", 0, 12)); // NOI18N
+        attendBtn.setText("Atender Cita");
+        attendBtn.addActionListener(this::attendBtnActionPerformed);
+
+        cancelBtn.setFont(new java.awt.Font("Poppins", 0, 12)); // NOI18N
+        cancelBtn.setText("Cancelar Cita");
+        cancelBtn.addActionListener(this::cancelBtnActionPerformed);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(165, Short.MAX_VALUE)
-                .addComponent(attendBtn)
-                .addGap(163, 163, 163))
+                .addContainerGap(50, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+                    .addComponent(stateInfoLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(attendBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(cancelBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(50, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(67, 67, 67)
+                .addGap(40, 40, 40)
                 .addComponent(jLabel1)
-                .addGap(18, 18, 18)
-                .addComponent(attendBtn)
-                .addContainerGap(129, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(stateInfoLabel)
+                .addGap(35, 35, 35)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(attendBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cancelBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(95, Short.MAX_VALUE))
         );
 
-        jTabbedPane1.addTab("Atender", jPanel1);
+        jTabbedPane1.addTab("Estado", jPanel1);
 
         jLabel2.setFont(new java.awt.Font("Poppins", 1, 18)); // NOI18N
         jLabel2.setText("Reprogramar Cita");
@@ -86,6 +189,7 @@ public class DeleteUpdateAppointment extends javax.swing.JFrame {
         scheduleComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "AM", "PM" }));
 
         rescheduleBtn.setText("Reprogramar");
+        rescheduleBtn.addActionListener(this::rescheduleBtnActionPerformed);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -93,7 +197,7 @@ public class DeleteUpdateAppointment extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap(92, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel2)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -105,7 +209,8 @@ public class DeleteUpdateAppointment extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(minuteSpinField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(scheduleComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(scheduleComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(dateChooser, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(87, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -120,8 +225,10 @@ public class DeleteUpdateAppointment extends javax.swing.JFrame {
                     .addComponent(minuteSpinField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(scheduleComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
+                .addComponent(dateChooser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(28, 28, 28)
                 .addComponent(rescheduleBtn)
-                .addContainerGap(100, Short.MAX_VALUE))
+                .addContainerGap(50, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Reprogramar", jPanel2);
@@ -132,6 +239,7 @@ public class DeleteUpdateAppointment extends javax.swing.JFrame {
         idField.setEditable(false);
 
         deleteBtn.setText("Eliminar");
+        deleteBtn.addActionListener(this::deleteBtnActionPerformed);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -176,6 +284,202 @@ public class DeleteUpdateAppointment extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void attendBtnActionPerformed(java.awt.event.ActionEvent evt) {
+        if (currentAppointment == null) {
+            return;
+        }
+
+        if (!AppointmentsDto.STATE_PROGRAMADA.equalsIgnoreCase(currentAppointment.getState())) {
+            JOptionPane.showMessageDialog(this,
+                    "Solo se pueden marcar como atendidas las citas en estado 'Programada'.",
+                    "Operación no Permitida", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "¿Desea marcar esta cita médica como ATENDIDA?",
+                "Confirmar Atención", JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            AppointmentsDto appointmentsDto = new AppointmentsDto();
+            boolean success = appointmentsDto.attendAppointment(this.id);
+            if (success) {
+                String logUser = (receptionist != null) ? receptionist.getFullName() + " (" + receptionist.getId() + ")" : "Recepcionista";
+                DTO.ReportsDto.recordLog(logUser, "Citas", "Estado / Reprogramación", "Cita UUID " + this.id + " marcada como ATENDIDA");
+                JOptionPane.showMessageDialog(this, "Cita marcada como atendida exitosamente.", "Registro Actualizado", JOptionPane.INFORMATION_MESSAGE);
+                this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "No fue posible actualizar el estado de la cita.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {
+        if (currentAppointment == null) {
+            return;
+        }
+
+        if (!AppointmentsDto.STATE_PROGRAMADA.equalsIgnoreCase(currentAppointment.getState())) {
+            JOptionPane.showMessageDialog(this,
+                    "Solo se pueden cancelar citas en estado 'Programada'.",
+                    "Operación no Permitida", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "¿Desea CANCELAR esta cita médica?",
+                "Confirmar Cancelación", JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            AppointmentsDto appointmentsDto = new AppointmentsDto();
+            boolean success = appointmentsDto.cancelAppointment(this.id);
+            if (success) {
+                String logUser = (receptionist != null) ? receptionist.getFullName() + " (" + receptionist.getId() + ")" : "Recepcionista";
+                DTO.ReportsDto.recordLog(logUser, "Citas", "Estado / Reprogramación", "Cita UUID " + this.id + " CANCELADA");
+                JOptionPane.showMessageDialog(this, "Cita cancelada exitosamente.", "Registro Actualizado", JOptionPane.INFORMATION_MESSAGE);
+                this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "No fue posible cancelar la cita.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void rescheduleBtnActionPerformed(java.awt.event.ActionEvent evt) {
+        if (currentAppointment == null) {
+            return;
+        }
+
+        if (!AppointmentsDto.STATE_PROGRAMADA.equalsIgnoreCase(currentAppointment.getState())) {
+            JOptionPane.showMessageDialog(this,
+                    "Solo se pueden reprogramar citas en estado 'Programada'.",
+                    "Operación no Permitida", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Date selectedDate = dateChooser.getDate();
+        if (selectedDate == null) {
+            JOptionPane.showMessageDialog(this, "Por favor, seleccione una fecha.", "Fecha Requerida", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        LocalDate appointmentDate = selectedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        if (appointmentDate.isBefore(LocalDate.now())) {
+            JOptionPane.showMessageDialog(this, "No es posible reprogramar una cita para una fecha pasada.", "Fecha Inválida", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int hour = hourSpinField.getValue();
+        int minute = minuteSpinField.getValue();
+        String ampm = (String) scheduleComboBox.getSelectedItem();
+
+        if (hour < 1 || hour > 12) {
+            JOptionPane.showMessageDialog(this, "La hora debe estar en el rango de 1 a 12.", "Hora Inválida", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (minute < 0 || minute > 59) {
+            JOptionPane.showMessageDialog(this, "Los minutos deben estar en el rango de 00 a 59.", "Minutos Inválidos", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int hour24 = hour;
+        if ("PM".equals(ampm) && hour < 12) {
+            hour24 += 12;
+        } else if ("AM".equals(ampm) && hour == 12) {
+            hour24 = 0;
+        }
+        LocalTime appointmentHour = LocalTime.of(hour24, minute);
+
+        // Verificación de disponibilidad del médico
+        DoctorsDto doctorsDto = new DoctorsDto();
+        Doctor doctor = doctorsDto.searchRegister(currentAppointment.getIdDoctor());
+
+        if (doctor == null) {
+            JOptionPane.showMessageDialog(this, "No fue posible encontrar la información del médico asignado.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (!doctor.isState()) {
+            JOptionPane.showMessageDialog(this, "El médico asignado se encuentra inactivo y no puede atender citas.", "Médico Inactivo", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.ENGLISH);
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        LocalTime doctorStart = doctor.getStartShift();
+        LocalTime doctorEnd = doctor.getEndShift();
+        if (appointmentHour.isBefore(doctorStart) || appointmentHour.isAfter(doctorEnd)) {
+            String doctorSchedule = doctorStart.format(timeFormatter) + " a " + doctorEnd.format(timeFormatter);
+            JOptionPane.showMessageDialog(this,
+                    "El médico no está disponible a esa hora.\nSu horario de atención es de: " + doctorSchedule,
+                    "Médico Fuera de Horario", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Verificación de colisión de citas del médico
+        AppointmentsDto appointmentsDto = new AppointmentsDto();
+        ArrayList<Appointment> doctorAppointments = appointmentsDto.readAppointmentsByDoctor(doctor.getId());
+        for (Appointment existing : doctorAppointments) {
+            if (!existing.getIdAppointment().equals(this.id)
+                    && AppointmentsDto.STATE_PROGRAMADA.equalsIgnoreCase(existing.getState())
+                    && existing.getDate().equals(appointmentDate)
+                    && existing.getHour().equals(appointmentHour)) {
+                JOptionPane.showMessageDialog(this,
+                        "El médico ya tiene otra cita programada para el " + appointmentDate.format(dateFormatter)
+                        + " a las " + appointmentHour.format(timeFormatter) + ".\nPor favor seleccione otro horario.",
+                        "Horario no Disponible", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+
+        // Verificación de colisión de citas del paciente
+        ArrayList<Appointment> patientAppointments = appointmentsDto.readAppointmentsByPatient(currentAppointment.getIdPatient());
+        for (Appointment existing : patientAppointments) {
+            if (!existing.getIdAppointment().equals(this.id)
+                    && AppointmentsDto.STATE_PROGRAMADA.equalsIgnoreCase(existing.getState())
+                    && existing.getDate().equals(appointmentDate)
+                    && existing.getHour().equals(appointmentHour)) {
+                JOptionPane.showMessageDialog(this,
+                        "El paciente ya tiene otra cita programada en la misma fecha y hora.",
+                        "Conflicto de Horario del Paciente", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+
+        boolean success = appointmentsDto.rescheduleAppointment(this.id, appointmentDate, appointmentHour);
+        if (success) {
+            String logUser = (receptionist != null) ? receptionist.getFullName() + " (" + receptionist.getId() + ")" : "Recepcionista";
+            DTO.ReportsDto.recordLog(logUser, "Citas", "Estado / Reprogramación",
+                    "Cita UUID " + this.id + " reprogramada para fecha " + appointmentDate.format(dateFormatter) + " a las " + appointmentHour.format(timeFormatter));
+            JOptionPane.showMessageDialog(this, "Cita reprogramada exitosamente.", "Reprogramación Exitosa", JOptionPane.INFORMATION_MESSAGE);
+            this.dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "No fue posible reprogramar la cita médica.", "Error al Guardar", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {
+        if (currentAppointment == null) {
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "¿Está seguro de que desea eliminar permanentemente esta cita médica?\nEsta acción no se puede deshacer.",
+                "Confirmar Eliminación", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            AppointmentsDto appointmentsDto = new AppointmentsDto();
+            boolean success = appointmentsDto.deleteRegister(this.id);
+            if (success) {
+                String logUser = (receptionist != null) ? receptionist.getFullName() + " (" + receptionist.getId() + ")" : "Recepcionista";
+                DTO.ReportsDto.recordLog(logUser, "Citas", "Eliminación", "Cita UUID " + this.id + " eliminada del sistema");
+                JOptionPane.showMessageDialog(this, "Cita médica eliminada exitosamente.", "Registro Eliminado", JOptionPane.INFORMATION_MESSAGE);
+                this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "No fue posible eliminar la cita médica.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
     /**
      * @param args the command line arguments
      */
@@ -203,6 +507,8 @@ public class DeleteUpdateAppointment extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton attendBtn;
+    private javax.swing.JButton cancelBtn;
+    private com.toedter.calendar.JDateChooser dateChooser;
     private javax.swing.JButton deleteBtn;
     private com.toedter.components.JSpinField hourSpinField;
     private javax.swing.JTextField idField;
@@ -217,5 +523,6 @@ public class DeleteUpdateAppointment extends javax.swing.JFrame {
     private com.toedter.components.JSpinField minuteSpinField;
     private javax.swing.JButton rescheduleBtn;
     private javax.swing.JComboBox<String> scheduleComboBox;
+    private javax.swing.JLabel stateInfoLabel;
     // End of variables declaration//GEN-END:variables
 }

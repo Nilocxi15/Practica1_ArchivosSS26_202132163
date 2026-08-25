@@ -151,9 +151,7 @@ public class DoctorsDto {
 
             RandomAccessFile raf = new RandomAccessFile("data/doctors.dat", "r");
 
-            long totalRegisters = raf.length() / registerSize;
-
-            for (int i = 0; i < totalRegisters; i++) {
+            while (raf.getFilePointer() + 317 <= raf.length()) {
                 byte[] idData = new byte[idSize];
                 byte[] nameData = new byte[nameSize];
                 byte[] lastnameData = new byte[lastnameSize];
@@ -174,7 +172,17 @@ public class DoctorsDto {
                 raf.readFully(startShiftData);
                 raf.readFully(endShiftData);
                 raf.readFully(stateData);
-                raf.readByte(); // Salto de línea
+
+                // Consumir salto de línea (\n o \r\n)
+                if (raf.getFilePointer() < raf.length()) {
+                    byte b = raf.readByte();
+                    if (b == '\r' && raf.getFilePointer() < raf.length()) {
+                        long mark = raf.getFilePointer();
+                        if (raf.readByte() != '\n') {
+                            raf.seek(mark);
+                        }
+                    }
+                }
 
                 // Parseo de datos binarios a String
                 String id = new String(idData, java.nio.charset.StandardCharsets.ISO_8859_1).trim();
@@ -192,10 +200,9 @@ public class DoctorsDto {
                     continue;
                 }
 
-                // Parseo de String a LocalTime
-                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("hh:mm a", Locale.ENGLISH);
-                LocalTime startHour = LocalTime.parse(startShift, dtf);
-                LocalTime endHour = LocalTime.parse(endShift, dtf);
+                // Parseo robusto de String a LocalTime
+                LocalTime startHour = parseTimeFlexible(startShift);
+                LocalTime endHour = parseTimeFlexible(endShift);
 
                 // Parse de String a boolean
                 boolean stateBool = "1".equals(state);
@@ -210,6 +217,46 @@ public class DoctorsDto {
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>();
+        }
+    }
+
+    public static LocalTime parseTimeFlexible(String str) {
+        if (str == null || str.isBlank()) {
+            return LocalTime.of(8, 0);
+        }
+        String s = str.trim().toUpperCase()
+                .replace("A. M.", "AM")
+                .replace("P. M.", "PM")
+                .replace("A.M.", "AM")
+                .replace("P.M.", "PM")
+                .replace("A.", "AM")
+                .replace("P.", "PM");
+        if (s.endsWith("AMM")) s = s.substring(0, s.length() - 1);
+        if (s.endsWith("PMM")) s = s.substring(0, s.length() - 1);
+        if (s.endsWith("A") && !s.endsWith("AM")) s = s + "M";
+        if (s.endsWith("P") && !s.endsWith("PM")) s = s + "M";
+
+        DateTimeFormatter dtf1 = DateTimeFormatter.ofPattern("hh:mm a", Locale.ENGLISH);
+        DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("h:mm a", Locale.ENGLISH);
+        DateTimeFormatter dtf3 = DateTimeFormatter.ofPattern("HH:mm");
+        DateTimeFormatter dtf4 = DateTimeFormatter.ofPattern("H:mm");
+
+        try {
+            return LocalTime.parse(s, dtf1);
+        } catch (Exception e1) {
+            try {
+                return LocalTime.parse(s, dtf2);
+            } catch (Exception e2) {
+                try {
+                    return LocalTime.parse(s, dtf3);
+                } catch (Exception e3) {
+                    try {
+                        return LocalTime.parse(s, dtf4);
+                    } catch (Exception e4) {
+                        return LocalTime.of(8, 0);
+                    }
+                }
+            }
         }
     }
 
